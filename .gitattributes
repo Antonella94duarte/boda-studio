@@ -1,0 +1,25 @@
+﻿# ---------------------------------------------------------------------------
+# Normaliza los finales de línea para que el repositorio no arrastre ruido.
+#
+# Este proyecto se desarrolla en Windows pero se despliega en Linux (Docker,
+# Railway/Render). Sin esta regla, Git convierte LF en CRLF al descargar y cada
+# archivo aparece como modificado según la máquina, ensuciando los diffs.
+#
+# Se guarda LF en el repositorio; los scripts de Windows conservan CRLF.
+# ---------------------------------------------------------------------------
+* text=auto eol=lf
+
+*.ps1   text eol=crlf
+*.cmd   text eol=crlf
+*.bat   text eol=crlf
+
+# Binarios: nunca se tocan.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.xlsx  binary
+*.ico   binary
+
+# Archivos generados: no cuentan para las estadísticas del repositorio.
+pnpm-lock.yaml  linguist-generated

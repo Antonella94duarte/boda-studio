@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "slug": "vanessayhector",
+  "couple": {
+    "bride": "Vanessa",
+    "groom": "Héctor",
+    "display": "Vanessa y Héctor"
+  },
+  "metaTitle": "Vanessa y Héctor · ¡Nos casamos!",
+  "heroTagline": "¡Nos casamos!",
+  "quote": {
+    "text": "Queremos que sean parte de este día tan importante para nosotros."
+  },
+  "story": {
+    "paragraphs": [
+      "Tenemos una noticia muy especial: ¡Nos casamos! Después de un camino hermoso, decidimos dar el paso más importante de nuestras vidas."
+    ],
+    "photos": []
+  },
+  "events": [
+    {
+      "id": "principal",
+      "kind": "other",
+      "title": "Nuestra boda",
+      "startAt": "2026-07-11T19:00:00-04:00",
+      "venueName": "A confirmar",
+      "city": "Asunción",
+      "isMain": true
+    }
+  ],
+  "dressCode": {
+    "title": "Código de vestimenta",
+    "text": "Elegante.",
+    "palette": []
+  },
+  "gifts": {
+    "message": "El mejor regalo es tu presencia. Si igual querés obsequiarnos algo, te dejamos nuestros datos.",
+    "accounts": [],
+    "presenceOnly": true
+  },
+  "rsvp": {
+    "deadline": "2026-06-11",
+    "contactPhone": "+595981000000",
+    "allowOnlineConfirm": true,
+    "defaultPasses": 2,
+    "askCompanionNames": true,
+    "askDietary": true,
+    "thanksMessage": "¡Gracias por confirmar! Los esperamos para celebrar juntos."
+  },
+  "music": { "url": "", "autoplay": false },
+  "gallery": [],
+  "closing": "¡Los esperamos para celebrar juntos!",
+  "theme": {
+    "primary": "#6b5b4a",
+    "accent": "#b08968",
+    "background": "#faf7f2",
+    "surface": "#ffffff",
+    "text": "#2b2622",
+    "muted": "#7a7168",
+    "fontHeading": "'Cormorant Garamond', serif",
+    "fontBody": "'Montserrat', sans-serif",
+    "preset": "rustic"
+  },
+  "sections": [
+    { "id": "hero", "enabled": true, "order": 0 },
+    { "id": "countdown", "enabled": true, "order": 1 },
+    { "id": "events", "enabled": true, "order": 2 },
+    { "id": "story", "enabled": true, "order": 3 },
+    { "id": "dressCode", "enabled": false, "order": 4 },
+    { "id": "gifts", "enabled": true, "order": 5 },
+    { "id": "rsvp", "enabled": true, "order": 6 },
+    { "id": "closing", "enabled": true, "order": 7 }
+  ],
+  "published": true
+}

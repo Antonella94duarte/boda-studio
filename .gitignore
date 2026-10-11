@@ -1,0 +1,20 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+
+# Base de datos local (SQLite en desarrollo)
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+
+# Sesión de WhatsApp (Baileys). NUNCA subir esto: da acceso a la cuenta.
+apps/api/storage/sessions/
+
+# Subidas de los clientes
+apps/api/storage/uploads/
+
+# Sistema
+.DS_Store
+Thumbs.db

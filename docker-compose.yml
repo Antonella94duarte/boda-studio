@@ -1,0 +1,55 @@
+# Alternativa al hosting gestionado: levanta todo el stack en un VPS o en tu PC.
+#   docker compose up -d --build
+# La API requiere un proceso SIEMPRE activo y un volumen persistente para la
+# sesión de WhatsApp (storage/sessions). Por eso este compose usa restart: always.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: boda
+      POSTGRES_PASSWORD: boda
+      POSTGRES_DB: boda_studio
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boda -d boda_studio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://boda:boda@db:5432/boda_studio?schema=public
+      WHATSAPP_SESSION_DIR: /app/storage/sessions
+    volumes:
+      # Persistencia de la sesión de WhatsApp: si se pierde, hay que escanear el QR otra vez.
+      - wa_session:/app/storage/sessions
+      - uploads:/app/storage/uploads
+    ports:
+      - "4000:4000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
+  wa_session:
+  uploads:

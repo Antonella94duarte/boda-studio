@@ -1,0 +1,186 @@
+// ---------------------------------------------------------------------------
+// Boda Studio — esquema de datos multi-boda.
+//
+// Desarrollo: SQLite (cero configuración, archivo ./dev.db).
+// Producción: PostgreSQL. Para migrar, cambiar el provider a "postgresql" y
+// ejecutar `pnpm --filter @boda/api db:push` (o prisma migrate deploy).
+//
+// Nota deliberada: la configuración de cada boda se guarda como String JSON
+// (no como Json) para que el mismo esquema funcione en SQLite y en PostgreSQL.
+// La validación real la hace Zod en `@boda/shared` al leer y al escribir.
+// ---------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  /// "planner" (organizadora) | "admin" (soporte)
+  role         String   @default("planner")
+  createdAt    DateTime @default(now())
+
+  weddings Wedding[]
+  sessions WhatsAppSession[]
+}
+
+model Wedding {
+  id   String @id @default(cuid())
+  /// URL pública: /i/<slug>
+  slug String @unique
+  /// Título interno para el panel: "Vanessa & Héctor — 11/07/2026"
+  title String
+  /// JSON validado con WeddingConfigSchema (@boda/shared)
+  config    String
+  published Boolean  @default(false)
+  ownerId   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner     User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  guests    Guest[]
+  campaigns Campaign[]
+  logs      EventLog[]
+
+  @@index([ownerId])
+}
+
+model Guest {
+  id       String @id @default(cuid())
+  weddingId String
+
+  /// Token del enlace personalizado. Aleatorio, no adivinable.
+  token     String @unique
+  fullName  String
+  /// Tal como venía en el archivo (auditoría de la importación)
+  rawPhone  String?
+  /// Normalizado a E.164. Es el número al que se envía.
+  phone     String
+  passes    Int    @default(2)
+  /// Grupo familiar / mesa: permite un solo mensaje por familia
+  groupName String?
+  notes     String?
+  /// Pases extra que la organizadora sumó en el panel
+  extraPasses Int  @default(0)
+
+  /// pending | confirmed | declined | maybe
+  status     String    @default("pending")
+  /// JSON: nombres de los acompañantes
+  companions String    @default("[]")
+  dietary    String?
+  guestMessage String?
+  respondedAt DateTime?
+
+  /// not_sent | queued | sent | delivered | read | failed | skipped
+  messageStatus String    @default("not_sent")
+  messageSentAt DateTime?
+  messageError  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wedding     Wedding        @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  campaignItems CampaignItem[]
+
+  @@index([weddingId])
+  @@index([weddingId, phone])
+  @@index([weddingId, status])
+}
+
+model Campaign {
+  id          String @id @default(cuid())
+  weddingId   String
+  name        String
+  /// Plantilla con {{variables}}
+  template    String
+  /// draft | running | paused | finished | cancelled
+  status      String @default("draft")
+  /// Modo seco: renderiza y registra, no envía
+  dryRun      Boolean @default(true)
+  minDelayMs  Int    @default(6000)
+  maxDelayMs  Int    @default(14000)
+
+  totalCount   Int @default(0)
+  sentCount    Int @default(0)
+  failedCount  Int @default(0)
+  skippedCount Int @default(0)
+
+  createdAt  DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  wedding Wedding        @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  items   CampaignItem[]
+
+  @@index([weddingId])
+}
+
+model CampaignItem {
+  id         String @id @default(cuid())
+  campaignId String
+  guestId    String
+
+  /// pending | sending | sent | failed | skipped
+  status       String    @default("pending")
+  /// Texto final enviado (o que se enviaría en modo seco)
+  renderedBody String
+  attempts     Int       @default(0)
+  sentAt       DateTime?
+  error        String?
+  /// Id del mensaje devuelto por WhatsApp, para trazar entregas
+  providerMessageId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  guest    Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, status])
+}
+
+model WhatsAppSession {
+  id     String @id @default(cuid())
+  userId String
+
+  /// disconnected | qr | connecting | connected | error
+  status      String    @default("disconnected")
+  phoneNumber String?
+  /// Último QR generado (data URL) para mostrarlo en el panel
+  qrDataUrl   String?
+  lastError   String?
+  lastQrAt    DateTime?
+  connectedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+/// Bitácora: importaciones, envíos, cambios de estado. Sirve para auditar
+/// cuando un cliente pregunta "¿a quién le llegó?".
+model EventLog {
+  id        String   @id @default(cuid())
+  weddingId String?
+  type      String
+  message   String
+  /// JSON con detalles
+  payload   String?
+  createdAt DateTime @default(now())
+
+  wedding Wedding? @relation(fields: [weddingId], references: [id], onDelete: SetNull)
+
+  @@index([weddingId, createdAt])
+}

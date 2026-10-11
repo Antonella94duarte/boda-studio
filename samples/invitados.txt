@@ -1,0 +1,9 @@
+Invitado	WhatsApp	Cupos	Mesa	Comentarios
+Hugo Villamayor	0971 100 200	2	Mesa 1	
+Silvia Núñez	0972 300 400	2	Mesa 1	Intolerante a la lactosa
+Familia Aquino	0973 500 600	6	Mesa 2	Tres adultos y tres niños
+Gustavo Mereles	0974 700 800	1	Mesa 3	
+Verónica Ibarra	0975 900 100	2	Mesa 3	
+Ramón Cabañas	0976 200 300	2	Mesa 4	
+Beatriz Sosa	0977 400 500	4	Mesa 4	Veganos los dos
+Christian Ocampos	0978 600 700	2	Mesa 5	

@@ -1,0 +1,50 @@
+packages:
+  - apps/*
+  - packages/*
+
+# ---------------------------------------------------------------------------
+# Subdependencias "exóticas" (resueltas por git en vez de por el registro).
+#
+# @whiskeysockets/baileys declara `@whiskeysockets/eslint-config` como
+# dependencia de ejecución (un error de empaquetado suyo) y ese paquete se
+# resuelve desde un repositorio git. pnpm 11 rechaza esas subdependencias por
+# defecto y aborta toda la instalación con ERR_PNPM_EXOTIC_SUBDEP, así que hay
+# que autorizarlas para poder instalar el motor de WhatsApp.
+#
+# Riesgo acotado: es una configuración de ESLint (texto), no se ejecuta en
+# tiempo de ejecución de la API. Si se prefiere no permitirlo, la alternativa es
+# quitar `@whiskeysockets/baileys` de apps/api y usar WHATSAPP_ENGINE=preview o
+# cloud-api (ver docs/05-whatsapp-envios.md).
+# ---------------------------------------------------------------------------
+blockExoticSubdeps: false
+
+# ---------------------------------------------------------------------------
+# Scripts de instalación (postinstall) permitidos.
+#
+# Por seguridad, pnpm no ejecuta scripts de dependencias salvo que se
+# autoricen explícitamente; sin esta lista, `pnpm install` falla con
+# ERR_PNPM_IGNORED_BUILDS.
+#
+# Se declaran con los dos nombres porque cambiaron de sitio entre versiones:
+#   - pnpm 11+: `allowBuilds` (mapa paquete -> true/false)
+#   - pnpm 10:  `onlyBuiltDependencies` (lista)
+# ---------------------------------------------------------------------------
+allowBuilds:
+  # Vite, Vitest y tsx lo necesitan para compilar TypeScript.
+  esbuild: true
+  # Prisma descarga/valida sus motores en el postinstall.
+  prisma: true
+  "@prisma/client": true
+  "@prisma/engines": true
+  # Dependencias nativas opcionales de `ws` (las usa Baileys): no hacen falta.
+  bufferutil: false
+  "utf-8-validate": false
+  # Lo usa Baileys para el protocolo de WhatsApp.
+  protobufjs: true
+
+onlyBuiltDependencies:
+  - esbuild
+  - prisma
+  - "@prisma/client"
+  - "@prisma/engines"
+  - protobufjs

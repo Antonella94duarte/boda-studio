@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "slug": "sandraujorge",
+  "couple": {
+    "bride": "Sandra",
+    "groom": "Jorge",
+    "display": "Sandra y Jorge"
+  },
+  "metaTitle": "Sandra y Jorge · ¡Nos casamos!",
+  "heroImage": "/samples/sandra-jorge-1.png",
+  "heroTagline": "¡Nos casamos!",
+  "quote": {
+    "text": "Sobre todo vístanse de amor, que es el vínculo perfecto.",
+    "source": "Colosenses 3:4"
+  },
+  "story": {
+    "paragraphs": [
+      "Con alegría queremos invitarte a la celebración de nuestro matrimonio. Será un honor contar con tu presencia en este momento tan especial donde unimos nuestras vidas ante Dios.",
+      "Gracias por acompañarnos en el camino que nos trajo hasta aquí. Ahora queremos celebrarlo con las personas que queremos."
+    ],
+    "photos": ["/samples/sandra-jorge-2.png", "/samples/sandra-jorge-3.png"]
+  },
+  "events": [
+    {
+      "id": "religiosa",
+      "kind": "religious",
+      "title": "Boda Religiosa",
+      "startAt": "2026-10-30T16:30:00-03:00",
+      "venueName": "Iglesia Cristo Rey",
+      "address": "Avda. Kubitschek de Oliveira, Asunción",
+      "city": "Asunción",
+      "mapUrl": "https://maps.google.com/?q=Iglesia+Cristo+Rey+Asuncion",
+      "notes": "Se ruega puntualidad. Las puertas se cierran al inicio de la ceremonia.",
+      "isMain": true
+    },
+    {
+      "id": "civil",
+      "kind": "civil",
+      "title": "Boda Civil",
+      "startAt": "2026-10-30T19:00:00-03:00",
+      "venueName": "Casa Ardissone",
+      "address": "Mcal. Estigarribia esq. Perú, Asunción",
+      "city": "Asunción",
+      "mapUrl": "https://maps.google.com/?q=Casa+Ardissone+Asuncion",
+      "isMain": false
+    },
+    {
+      "id": "brindis",
+      "kind": "brindis",
+      "title": "Brindis y Fiesta",
+      "startAt": "2026-10-30T20:00:00-03:00",
+      "venueName": "Casa Ardissone",
+      "city": "Asunción",
+      "notes": "Cena, brindis y baile hasta que el cuerpo aguante.",
+      "isMain": false
+    }
+  ],
+  "dressCode": {
+    "title": "Código de vestimenta",
+    "text": "Ellas de largo, ellos de corbata.",
+    "palette": ["#2f2a24", "#8a7a63", "#c9a227", "#f3ece1"]
+  },
+  "gifts": {
+    "message": "Tu presencia es el regalo más lindo de nuestro nuevo comienzo. Si además deseas obsequiarnos algo, todo aporte será recibido con mucho cariño y agradecimiento.",
+    "accounts": [
+      {
+        "label": "Cuenta bancaria",
+        "holder": "Sandra Kallus",
+        "bank": "Sudameris",
+        "number": "8010113000",
+        "alias": "CI 3939813",
+        "currency": "PYG"
+      }
+    ],
+    "presenceOnly": false
+  },
+  "rsvp": {
+    "deadline": "2026-10-10",
+    "contactPhone": "+595976178000",
+    "allowOnlineConfirm": true,
+    "defaultPasses": 2,
+    "askCompanionNames": true,
+    "askDietary": true,
+    "thanksMessage": "¡Gracias por confirmar! Te esperamos para celebrar juntos."
+  },
+  "music": {
+    "url": "",
+    "title": "Nuestra canción",
+    "artist": "",
+    "autoplay": false
+  },
+  "gallery": ["/samples/sandra-jorge-1.png", "/samples/sandra-jorge-2.png", "/samples/sandra-jorge-3.png"],
+  "closing": "¡Gracias por acompañarnos!",
+  "theme": {
+    "primary": "#8a7a63",
+    "accent": "#c9a227",
+    "background": "#fbf8f3",
+    "surface": "#ffffff",
+    "text": "#2f2a24",
+    "muted": "#7d7468",
+    "fontHeading": "'Cormorant Garamond', serif",
+    "fontBody": "'Montserrat', sans-serif",
+    "preset": "elegant"
+  },
+  "sections": [
+    { "id": "hero", "enabled": true, "order": 0 },
+    { "id": "countdown", "enabled": true, "order": 1 },
+    { "id": "quote", "enabled": true, "order": 2 },
+    { "id": "events", "enabled": true, "order": 3 },
+    { "id": "story", "enabled": true, "order": 4 },
+    { "id": "gallery", "enabled": true, "order": 5 },
+    { "id": "dressCode", "enabled": true, "order": 6 },
+    { "id": "gifts", "enabled": true, "order": 7 },
+    { "id": "rsvp", "enabled": true, "order": 8 },
+    { "id": "closing", "enabled": true, "order": 9 }
+  ],
+  "published": true
+}

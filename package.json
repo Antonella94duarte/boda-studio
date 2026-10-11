@@ -1,0 +1,23 @@
+{
+  "name": "boda-studio",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Plataforma multi-boda para wedding planners: invitaciones web personalizadas + envío masivo de WhatsApp + panel de confirmaciones",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "build:shared": "pnpm --filter @boda/shared build",
+    "dev": "pnpm run build:shared && pnpm -r --parallel dev",
+    "dev:api": "pnpm run build:shared && pnpm --filter @boda/api dev",
+    "dev:web": "pnpm run build:shared && pnpm --filter @boda/web dev",
+    "build": "pnpm run build:shared && pnpm --filter @boda/api build && pnpm --filter @boda/web build",
+    "typecheck": "pnpm run build:shared && pnpm -r typecheck",
+    "test": "pnpm run build:shared && pnpm -r test",
+    "db:push": "pnpm --filter @boda/api db:push",
+    "db:seed": "pnpm --filter @boda/api db:seed",
+    "db:studio": "pnpm --filter @boda/api db:studio",
+    "setup": "pnpm install && pnpm run build:shared && pnpm run db:push && pnpm run db:seed"
+  }
+}
