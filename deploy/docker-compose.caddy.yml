@@ -1,0 +1,35 @@
+# ---------------------------------------------------------------------------
+# Override de docker-compose.yml: agrega Caddy para tener HTTPS automático.
+# ---------------------------------------------------------------------------
+# Uso, desde la raíz del repositorio y con el .env ya completo:
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.caddy.yml up -d --build
+#
+# Caddy escucha en 80 y 443 (los únicos puertos que hay que abrir en la nube),
+# pide el certificado de Let's Encrypt para PUBLIC_WEB_URL y manda todo a la
+# web, que a su vez proxya /api a la API. Nada más queda publicado: la API y
+# nginx siguen en la red interna de Docker.
+# ---------------------------------------------------------------------------
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    environment:
+      # PUBLIC_WEB_URL se lee del .env del proyecto (interpolación de Compose).
+      SITE_ADDRESS: ${PUBLIC_WEB_URL:?definí PUBLIC_WEB_URL en el .env, por ejemplo https://bodas.tudominio.com}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  # Los certificados viven acá: si se borra, Caddy los vuelve a pedir (hay un
+  # límite semanal de Let's Encrypt, así que conviene no borrarlo seguido).
+  caddy_data:
+  caddy_config:

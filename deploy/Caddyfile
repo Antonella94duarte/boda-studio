@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# Caddy: HTTPS automático delante de la web (y la web ya hace de proxy de /api).
+# ---------------------------------------------------------------------------
+# El dominio se toma de la variable de entorno SITE_ADDRESS (el compose la
+# completa con PUBLIC_WEB_URL). Caddy pide y renueva el certificado de
+# Let's Encrypt solo: no hay que tocar nada más.
+#
+# Requisitos para que el certificado se emita:
+#   1. el dominio (o subdominio) apunta por DNS a la IP pública de esta máquina;
+#   2. los puertos 80 y 443 están abiertos de verdad (en la nube Y en el firewall
+#      de la máquina: ver docs/11-despliegue-desde-el-navegador.md).
+# ---------------------------------------------------------------------------
+
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	# Todo va a nginx: sirve la SPA y proxya /api a la API en el mismo origen.
+	# Un solo origen = sin CORS y un solo certificado.
+	reverse_proxy web:80 {
+		# La campaña de WhatsApp puede tardar: no cortar la respuesta.
+		transport http {
+			read_timeout 600s
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

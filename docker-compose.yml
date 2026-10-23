@@ -1,19 +1,29 @@
 # Alternativa al hosting gestionado: levanta todo el stack en un VPS o en tu PC.
-#   docker compose up -d --build
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.caddy.yml up -d --build
+#
 # La API requiere un proceso SIEMPRE activo y un volumen persistente para la
 # sesión de WhatsApp (storage/sessions). Por eso este compose usa restart: always.
+#
+# BASE DE DATOS: SQLite en un volumen, que es lo que corresponde al provider del
+# esquema (apps/api/prisma/schema.prisma es "sqlite"). Para PostgreSQL hay que
+# cambiar ese provider a "postgresql" en el esquema y levantar el perfil
+# `postgres` (ver el servicio `db` y docs/06-despliegue.md).
 services:
   db:
+    # PostgreSQL opcional: no arranca salvo que se pida el perfil.
+    #   docker compose --profile postgres up -d
+    # Requiere provider = "postgresql" en el esquema de Prisma y
+    # DATABASE_URL=postgresql://boda:boda@db:5432/boda_studio?schema=public
     image: postgres:16-alpine
+    profiles: ["postgres"]
     restart: unless-stopped
     environment:
       POSTGRES_USER: boda
       POSTGRES_PASSWORD: boda
       POSTGRES_DB: boda_studio
     volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U boda -d boda_studio"]
       interval: 10s
@@ -27,17 +37,20 @@ services:
     restart: always
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://boda:boda@db:5432/boda_studio?schema=public
+      # SQLite en el volumen: sobrevive a reinicios y a reconstrucciones.
+      # El .env puede pisar este valor.
+      DATABASE_URL: ${DATABASE_URL:-file:/app/storage/db/prod.db}
       WHATSAPP_SESSION_DIR: /app/storage/sessions
     volumes:
       # Persistencia de la sesión de WhatsApp: si se pierde, hay que escanear el QR otra vez.
       - wa_session:/app/storage/sessions
       - uploads:/app/storage/uploads
+      # Persistencia de la base SQLite.
+      - db_data:/app/storage/db
     ports:
-      - "4000:4000"
-    depends_on:
-      db:
-        condition: service_healthy
+      # Solo en loopback: se entra por Caddy (80/443). Si corrés sin Caddy,
+      # cambiá esto a "4000:4000".
+      - "127.0.0.1:4000:4000"
 
   web:
     build:
@@ -45,7 +58,8 @@ services:
       dockerfile: apps/web/Dockerfile
     restart: unless-stopped
     ports:
-      - "5173:80"
+      # Solo en loopback: Caddy publica la web en 80/443.
+      - "127.0.0.1:5173:80"
     depends_on:
       - api
 
@@ -53,3 +67,4 @@ volumes:
   db_data:
   wa_session:
   uploads:
+  pg_data:

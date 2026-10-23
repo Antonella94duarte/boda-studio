@@ -12,8 +12,10 @@ import campaignRoutes from './routes/campaigns.js';
 import guestRoutes from './routes/guests.js';
 import importRoutes from './routes/imports.js';
 import publicRoutes from './routes/public.js';
+import systemRoutes from './routes/system.js';
 import weddingRoutes from './routes/weddings.js';
 import whatsappRoutes from './routes/whatsapp.js';
+import { currentLinkHealth, linkWarningLine } from './services/link-health.js';
 
 /**
  * ---------------------------------------------------------------------------
@@ -59,6 +61,8 @@ export async function createApp(): Promise<FastifyInstance> {
       database = 'unavailable';
     }
 
+    const links = currentLinkHealth();
+
     return {
       status: 'ok',
       env: env.NODE_ENV,
@@ -66,6 +70,12 @@ export async function createApp(): Promise<FastifyInstance> {
       whatsappEngine: env.WHATSAPP_ENGINE,
       uptime: Math.round(process.uptime()),
       publicWebUrl: env.PUBLIC_WEB_URL,
+      // Se publica acá para que un chequeo externo (o `curl` desde otro sitio)
+      // detecte el error clásico: invitaciones que apuntan a localhost.
+      linkIsPublic: links.check.isPublic,
+      linkSendable: links.sendable,
+      linkProblem: links.check.problem,
+      linkWarnings: links.check.warnings,
     };
   });
 
@@ -79,6 +89,7 @@ export async function createApp(): Promise<FastifyInstance> {
       await api.register(campaignRoutes);
       await api.register(whatsappRoutes);
       await api.register(publicRoutes);
+      await api.register(systemRoutes);
     },
     { prefix: '/api' },
   );
@@ -160,6 +171,15 @@ export async function start(): Promise<void> {
   app.log.info(
     `Boda Studio API lista en ${env.PUBLIC_API_URL} (puerto ${env.PORT}, motor de WhatsApp: ${env.WHATSAPP_ENGINE})`,
   );
+
+  // Aviso de arranque: es el error de configuración que más caro sale, porque
+  // se descubre cuando los invitados ya recibieron un enlace muerto.
+  const linkWarning = linkWarningLine();
+  if (linkWarning) {
+    app.log.warn(linkWarning);
+  } else {
+    app.log.info(`Enlaces de invitación: ${env.PUBLIC_WEB_URL}`);
+  }
 }
 
 // Solo arranca si se ejecuta directamente (`node dist/server.js` o `tsx src/server.ts`).

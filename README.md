@@ -47,12 +47,19 @@ Credenciales del seed: las de `ADMIN_EMAIL` / `ADMIN_PASSWORD` del `.env`
 > panel sin mandar nada, poné `WHATSAPP_ENGINE=preview`: en ese modo el "envío" solo queda
 > registrado y nunca sale a la red.
 
+> **Antes de la primera campaña real:** el enlace del mensaje se arma con `PUBLIC_WEB_URL`, que
+> en desarrollo es `http://localhost:5173` — un enlace que **ningún invitado puede abrir**. La API
+> bloquea los envíos reales mientras el enlace no sea público (y avisa en el arranque, en
+> `/api/health` y con un cartel en el panel). Para ponerle una dirección real, gratis o por
+> 1-2 USD al año, ver **[10 · Una URL pública de verdad](docs/10-url-publica.md)**.
+
 ## Estructura
 
 ```
 apps/api        Backend Node (Fastify + Prisma): invitados, importación, campañas, WhatsApp
 apps/web        React + Vite: invitación pública personalizada + panel de la organizadora
 packages/shared Contratos Zod compartidos: invitación, invitado, importación, campaña
+deploy/         Piezas de despliegue: Caddyfile (HTTPS automático), override de compose y .env de producción
 samples/        Datos reales de ejemplo (boda Sandra & Jorge, listas en CSV/TXT/XLSX)
 docs/           Documentación del proyecto
 ```
@@ -70,6 +77,9 @@ docs/           Documentación del proyecto
 | [07 · Roadmap](docs/07-roadmap.md) | Fases, criterios de aceptación y riesgos |
 | [08 · Manual de la organizadora](docs/08-manual-organizadora.md) | Guía de uso sin tecnicismos |
 | [09 · Contrato HTTP del API](docs/09-contrato-http.md) | Todas las rutas, envolturas y la decisión de integración con la web |
+| [10 · Una URL pública de verdad](docs/10-url-publica.md) | Qué URL poner para que los enlaces de los mensajes abran: opciones gratis (0 USD) y de bajo coste |
+| [11 · Despliegue desde el navegador](docs/11-despliegue-desde-el-navegador.md) | Paso a paso sin instalar nada: Oracle Cloud + Cloud Shell + DNS + HTTPS |
+| [12 · Propuesta de infraestructura y costos](docs/12-propuesta-infraestructura-y-costos.md) | Versión para compartir con un socio (también en `.docx`) |
 
 ## Verificación
 
@@ -127,10 +137,20 @@ Ver [docs/07-roadmap.md](docs/07-roadmap.md).
 
 **Verificado de punta a punta** con `pwsh -File scripts/verify.ps1` (10/10 pasos en verde):
 instalación, compilación de los tres paquetes, generación del cliente Prisma, creación de las
-tablas, datos de ejemplo, typecheck estricto sin errores, **51 tests unitarios** (24 del paquete
-compartido + 27 del API) y **56 comprobaciones de integración por HTTP** (`scripts/smoke-api.mjs`),
-incluyendo una campaña de WhatsApp en modo seco con el texto final de cada invitado y una
-confirmación de asistencia.
+tablas, datos de ejemplo, typecheck estricto sin errores, **66 tests unitarios** (24 del paquete
+compartido + 42 del API) y **64 comprobaciones de integración por HTTP** (`scripts/smoke-api.mjs`),
+incluyendo una campaña de WhatsApp en modo seco con el texto final de cada invitado, una
+confirmación de asistencia y el rechazo de una campaña real cuando el enlace de las invitaciones
+no es público.
+
+> Sin PowerShell 7 a mano, el mismo script corre igual con
+> `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1`.
+
+> La guarda de enlaces públicos agregó `apps/api/src/utils/public-url.test.ts` (15 tests) y sus
+> comprobaciones en `scripts/smoke-api.mjs`. Si algún día esos dos archivos cambian, `pnpm test`
+> y `node scripts/smoke-api.mjs` son los que lo cubren.
+
+
 
 Lo que falta para usarlo con una clienta real:
 
@@ -140,7 +160,9 @@ Lo que falta para usarlo con una clienta real:
 2. **Probar el envío real**: cargar `WHATSAPP_ENGINE=baileys`, escanear el QR con el chip
    dedicado y hacer una campaña de 5 mensajes a números propios.
 3. **Desplegar** siguiendo [docs/06-despliegue.md](docs/06-despliegue.md), con el volumen
-   persistente para la sesión de WhatsApp.
+   persistente para la sesión de WhatsApp, y poner una **URL pública real** en
+   `PUBLIC_WEB_URL` ([docs/10-url-publica.md](docs/10-url-publica.md)): mientras siga en
+   `localhost`, la API bloquea los envíos reales.
 
 ## Aviso importante sobre WhatsApp
 

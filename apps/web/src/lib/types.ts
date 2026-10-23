@@ -189,7 +189,35 @@ export interface WhatsAppTestResponse {
   delivered: boolean;
   /** El texto final que se envió (o se habría enviado). */
   body: string;
+  /** ¿El enlace del mensaje se abre desde el teléfono que lo recibe? */
+  linkIsPublic?: boolean;
   note?: string;
+}
+
+/* --- Estado del sistema -------------------------------------------------- */
+
+/**
+ * A dónde apuntan los enlaces que llevan los mensajes de WhatsApp.
+ * Si `sendable` es `false`, el envío real queda bloqueado: el enlace no se
+ * puede abrir desde el teléfono de un invitado.
+ */
+export interface LinkStatusResponse {
+  publicWebUrl: string;
+  publicApiUrl: string;
+  isPublic: boolean;
+  sendable: boolean;
+  /** `null` cuando la dirección sí es pública. */
+  problem: string | null;
+  message: string;
+  warnings: string[];
+  /** Enlace de ejemplo, con la forma del `{{enlace}}` real. */
+  exampleLink: string;
+  /** Qué hacer para arreglarlo. */
+  remedy: string | null;
+  /** Documento con las opciones de URL pública (gratis y de bajo coste). */
+  docs: string;
+  whatsappEngine: string;
+  warning: string | null;
 }
 
 /* --- Invitación pública -------------------------------------------------- */

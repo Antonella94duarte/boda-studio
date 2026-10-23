@@ -12,6 +12,7 @@ import {
 } from '../services/campaigns/sender.js';
 import { toCampaignDto, toCampaignItemDto } from '../services/dto.js';
 import { logEvent } from '../services/events.js';
+import { currentLinkHealth } from '../services/link-health.js';
 import { parseWeddingConfig } from '../services/wedding-config.js';
 import { requireOwnedCampaign, requireOwnedWedding } from '../services/weddings.js';
 import { IdParamsSchema, sendError } from './helpers.js';
@@ -77,6 +78,26 @@ export default async function campaignRoutes(app: FastifyInstance): Promise<void
         'No hay invitados para enviar. Revisá la lista o los filtros elegidos.',
       );
       return;
+    }
+
+    // Un envío real con enlaces locales es plata (y número) tirada: se corta
+    // acá, antes de crear la campaña, con el motivo y la solución.
+    if (!body.dryRun) {
+      const health = currentLinkHealth();
+      if (!health.sendable) {
+        sendError(
+          reply,
+          409,
+          'El enlace de las invitaciones no es público',
+          `${health.check.message} ${health.remedy ?? ''}`.trim(),
+          {
+            publicWebUrl: health.publicWebUrl,
+            problem: health.check.problem,
+            docs: health.docs,
+          },
+        );
+        return;
+      }
     }
 
     const minDelayMs = body.minDelayMs ?? env.SEND_MIN_DELAY_MS;

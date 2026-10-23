@@ -88,10 +88,24 @@ maxDelayMs?}`. Si no se envían `guestIds`, se toma a **todos los invitados pend
 | POST | `/api/whatsapp/connect` | igual a status (arranca el motor y devuelve el QR si corresponde) |
 | GET | `/api/whatsapp/qr` | `{engine, status, qrDataUrl, updatedAt, hint, sessionDir}` |
 | POST | `/api/whatsapp/logout` | `{engine, status: 'disconnected'}` |
-| POST | `/api/weddings/:id/whatsapp/test` | `{ok, engine, phone, delivered, body, note?}` · envía **un** mensaje a un número suelto sin tocar invitados (400 si el teléfono es inválido, 409 si el motor no está conectado) |
+| POST | `/api/weddings/:id/whatsapp/test` | `{ok, engine, phone, delivered, body, linkIsPublic, note?}` · envía **un** mensaje a un número suelto sin tocar invitados (400 si el teléfono es inválido, 409 si el motor no está conectado) |
 
 `status` ∈ `disconnected` · `qr` · `connecting` · `connected` · `error`.
 `engine` ∈ `preview` · `baileys` · `cloud-api`.
+
+## Estado del sistema
+
+| Método | Ruta | Respuesta |
+|---|---|---|
+| GET | `/api/system/links` | `{publicWebUrl, publicApiUrl, isPublic, sendable, problem, message, warnings[], exampleLink, remedy, docs, whatsappEngine, warning}` |
+
+`isPublic` responde a la única pregunta que importa antes de una campaña: **¿el enlace del
+mensaje se abre desde el teléfono de un invitado?** (`problem` ∈ `loopback` · `private-ip` ·
+`local-hostname` · `link-local` · `reserved-ip` · `reserved-domain` · `invalid` · `protocol`).
+`sendable` es `false` cuando `PUBLIC_WEB_URL` no es pública: en ese estado
+`POST /api/weddings/:id/campaigns` con `dryRun: false` responde **409** y no crea la campaña.
+El panel usa este endpoint para mostrar el aviso rojo. Ver
+[10 · Una URL pública de verdad](10-url-publica.md).
 
 ## Invitación pública (sin token)
 
@@ -109,7 +123,10 @@ Si la boda tiene `rsvp.allowOnlineConfirm = false`, responde 403 con el WhatsApp
 
 | Método | Ruta | Respuesta |
 |---|---|---|
-| GET | `/api/health` | `{status: 'ok', ...}` |
+| GET | `/api/health` | `{status: 'ok', env, database, whatsappEngine, uptime, publicWebUrl, linkIsPublic, linkSendable, linkProblem, linkWarnings[]}` |
+
+`linkIsPublic` viaja en el health a propósito: es el chequeo que se puede hacer desde fuera con
+un `curl` y detecta el error clásico de dejar `PUBLIC_WEB_URL` en `localhost`.
 
 ## Sobre las envolturas: decisión de integración
 

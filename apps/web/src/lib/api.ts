@@ -41,6 +41,7 @@ import type {
   GuestUpdateInput,
   ImportCommitResponse,
   ImportPreview,
+  LinkStatusResponse,
   LoginResponse,
   PublicRsvpResponse,
   PublicWeddingResponse,
@@ -569,6 +570,19 @@ export const api = {
         method: 'POST',
         body: input,
       }),
+  },
+
+  /* --- Estado del sistema ----------------------------------------------- */
+  system: {
+    /**
+     * A dónde apuntan los enlaces de las invitaciones.
+     *
+     * El panel lo consulta al entrar: si `sendable` es `false`, los envíos
+     * reales quedan bloqueados y hay que avisarlo antes de que la organizadora
+     * cargue una lista de 200 invitados.
+     */
+    links: (signal?: AbortSignal): Promise<LinkStatusResponse> =>
+      request<LinkStatusResponse>('/system/links', { signal }),
   },
 
   /* --- Invitación pública (sin token) ----------------------------------- */

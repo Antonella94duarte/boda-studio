@@ -13,6 +13,7 @@ import { prisma } from '../../prisma.js';
 import { startOfToday } from '../../utils/dates.js';
 import { getEngine } from '../../whatsapp/index.js';
 import { logEvent } from '../events.js';
+import { currentLinkHealth } from '../link-health.js';
 import { guestLink } from '../tokens.js';
 import { parseWeddingConfig } from '../wedding-config.js';
 
@@ -216,6 +217,33 @@ async function runCampaign(campaignId: string, state: RunState): Promise<void> {
 
   const wedding = campaign.wedding;
   const config = parseWeddingConfig(wedding.config, wedding.slug);
+
+  // Envío real con un enlace que los invitados no pueden abrir: no se manda
+  // nada. Es preferible una campaña en pausa con el motivo escrito que 200
+  // mensajes con un enlace muerto (gasta el número y no confirma nadie).
+  if (!campaign.dryRun) {
+    const health = currentLinkHealth();
+    if (!health.sendable) {
+      await prisma.campaign.updateMany({
+        where: { id: campaignId, status: { in: ['draft', 'running'] } },
+        data: { status: 'paused' },
+      });
+      await logEvent({
+        weddingId: wedding.id,
+        type: 'campaign.blocked_links',
+        message: `La campaña "${campaign.name}" no se envió: los enlaces apuntan a ${health.publicWebUrl}, que no se puede abrir desde el teléfono de un invitado. ${health.remedy}`,
+        payload: {
+          campaignId,
+          publicWebUrl: health.publicWebUrl,
+          problem: health.check.problem,
+          docs: health.docs,
+        },
+      });
+      state.running = false;
+      return;
+    }
+  }
+
   const engine = getEngine(wedding.ownerId);
 
   await prisma.campaign.update({

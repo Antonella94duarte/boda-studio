@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { env } from '../env.js';
 import { buildTemplateContext } from '../services/campaigns/sender.js';
 import { logEvent } from '../services/events.js';
+import { currentLinkHealth } from '../services/link-health.js';
+import { publicWeddingUrl } from '../services/tokens.js';
 import { parseWeddingConfig } from '../services/wedding-config.js';
 import { requireOwnedWedding } from '../services/weddings.js';
 import { getEngine } from '../whatsapp/index.js';
@@ -140,7 +142,7 @@ export default async function whatsappRoutes(app: FastifyInstance): Promise<void
 
     // En una prueba el enlace va sin token, apuntando a la invitación general:
     // un token inventado abriría "enlace inválido" y no se vería nada.
-    const enlace = `${env.PUBLIC_WEB_URL}/i/${wedding.slug}`;
+    const enlace = publicWeddingUrl(wedding.slug);
     const rendered = renderTemplate(template, { ...context, enlace, rsvp: `${enlace}#rsvp` });
 
     if (rendered.missing.length > 0) {
@@ -184,10 +186,14 @@ export default async function whatsappRoutes(app: FastifyInstance): Promise<void
       /** `false` con el motor de previsualización: no salió nada de verdad. */
       delivered: engine.id !== 'preview',
       body: rendered.body,
+      /** ¿El enlace del mensaje se abre desde el teléfono que lo recibe? */
+      linkIsPublic: currentLinkHealth().check.isPublic,
       note:
         engine.id === 'preview'
           ? 'El motor de previsualización no envía mensajes reales: solo se registró el texto.'
-          : undefined,
+          : currentLinkHealth().sendable
+            ? undefined
+            : 'Ojo: el enlace de este mensaje apunta a una dirección local, así que en el teléfono que lo reciba no va a abrir. Ver docs/10-url-publica.md.',
     });
   });
 }

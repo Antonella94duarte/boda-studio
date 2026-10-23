@@ -76,6 +76,11 @@ async function main() {
   section('Salud');
   const health = await call('/health');
   ok('/api/health responde', health !== null && typeof health === 'object', JSON.stringify(health));
+  ok(
+    '/api/health informa si el enlace de las invitaciones es público',
+    typeof health.linkIsPublic === 'boolean',
+    `linkIsPublic=${health.linkIsPublic}`,
+  );
 
   section('Autenticación');
   const login = await call('/auth/login', { method: 'POST', body: { email: EMAIL, password: PASSWORD } });
@@ -231,8 +236,57 @@ async function main() {
   });
   ok('un teléfono inválido en la prueba -> 400', badTest.status === 400, `status ${badTest.status}`);
 
-  section('Campaña en modo seco');
+  section('Enlaces públicos (a dónde apuntan los mensajes)');
   const targets = afterRsvp.filter((g) => g.status !== 'declined').slice(0, 2).map((g) => g.id);
+
+  const links = await call('/system/links', { token });
+  ok(
+    'el panel puede consultar a dónde apuntan los enlaces',
+    typeof links?.publicWebUrl === 'string' && links.publicWebUrl.length > 0,
+    JSON.stringify(links),
+  );
+  ok(
+    'el ejemplo de enlace tiene la forma /i/<slug>',
+    typeof links?.exampleLink === 'string' && /^https?:\/\/.+\/i\/.+/.test(links.exampleLink),
+    links?.exampleLink,
+  );
+  ok(
+    '/api/health y /system/links coinciden sobre el enlace',
+    health.linkIsPublic === links?.isPublic,
+    `${health.linkIsPublic} vs ${links?.isPublic}`,
+  );
+
+  // La red de seguridad del bug que este repo arrastraba: con un enlace local,
+  // una campaña REAL no puede arrancar. Así se comprueba siempre, en desarrollo.
+  if (links?.sendable) {
+    ok(
+      'con un enlace público, el envío real no se bloquea',
+      true,
+      '(se omite crear una campaña real: enviaría mensajes de verdad)',
+    );
+  } else {
+    const blocked = await call(`/weddings/${wedding.id}/campaigns`, {
+      method: 'POST',
+      token,
+      raw: true,
+      body: {
+        name: 'No debe crearse',
+        template: 'Hola {{nombre}}, entrá: {{enlace}}',
+        guestIds: targets,
+        dryRun: false,
+        minDelayMs: 1000,
+        maxDelayMs: 1000,
+      },
+    });
+    ok('una campaña real con enlace local -> 409', blocked.status === 409, `status ${blocked.status}`);
+    ok(
+      'el 409 explica que el enlace no es público',
+      /público|localhost/i.test(JSON.stringify(blocked.payload ?? {})),
+      JSON.stringify(blocked.payload),
+    );
+  }
+
+  section('Campaña en modo seco');
   const campaign = await call(`/weddings/${wedding.id}/campaigns`, {
     method: 'POST',
     token,

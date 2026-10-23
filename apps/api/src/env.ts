@@ -61,12 +61,44 @@ loadDotEnv();
 const emptyToUndefined = (value: unknown): unknown =>
   typeof value === 'string' && value.trim() === '' ? undefined : value;
 
+/**
+ * Booleano de verdad.
+ *
+ * `z.coerce.boolean()` no sirve acá: convierte cualquier cadena no vacía a
+ * `true`, así que `ALLOW_LOCAL_LINKS=false` quedaría activado, que es
+ * exactamente lo contrario de lo que pide quien lo escribe.
+ */
+const envBoolean = z
+  .preprocess((value) => {
+    if (typeof value !== 'string') return value;
+    const normalized = value.trim().toLowerCase();
+    if (['1', 'true', 'yes', 'si', 'sí', 'on'].includes(normalized)) return true;
+    if (['', '0', 'false', 'no', 'off'].includes(normalized)) return false;
+    return value; // deja que Zod falle con un mensaje claro
+  }, z.boolean())
+  .default(false);
+
 const EnvSchema = z.object({
   // --- API -----------------------------------------------------------------
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().max(65535).default(4000),
+
+  /**
+   * Dirección pública donde se abre la invitación. Es la base del `{{enlace}}`
+   * de cada mensaje: si apunta a localhost, el invitado no puede entrar (su
+   * teléfono busca "localhost" en sí mismo). La API bloquea los envíos reales
+   * mientras no sea una dirección pública; ver `services/link-health.ts` y
+   * `docs/10-url-publica.md`.
+   */
   PUBLIC_WEB_URL: z.string().url().default('http://localhost:5173'),
   PUBLIC_API_URL: z.string().url().default('http://localhost:4000'),
+
+  /**
+   * Escape hatch para probar envíos reales con un enlace de la red local
+   * (por ejemplo, un teléfono propio en el mismo wifi). Nunca en producción:
+   * ningún invitado podría abrir su invitación.
+   */
+  ALLOW_LOCAL_LINKS: envBoolean,
 
   // --- Base de datos ------------------------------------------------------
   DATABASE_URL: z.string().min(1).default('file:./dev.db'),

@@ -77,5 +77,5 @@ Cada fase deja algo usable. Nada de «hacer todo el backend y después ver la in
 | Pérdida de la sesión (volumen) | Verificación con reinicio de prueba antes de la primera campaña |
 | Sospecha de reenvío del enlace | Un token por invitado; el panel muestra quién abrió cada enlace |
 | Lista con teléfonos mal cargados | Previsualización obligatoria antes de escribir en la base |
-| Enlaces con `localhost` por mala configuración | Checklist de despliegue con `PUBLIC_WEB_URL` verificado |
+| Enlaces con `localhost` por mala configuración | **Resuelto:** la API clasifica `PUBLIC_WEB_URL`, bloquea los envíos reales con enlace no público, lo avisa en el arranque, en `/api/health` (`linkIsPublic`) y con un cartel en el panel. Guía de URL real gratis/barata en [10 · Una URL pública de verdad](10-url-publica.md) |
 | Datos personales de terceros | Aislamiento por organizadora, borrado por invitado y borrado al finalizar |

@@ -2,13 +2,18 @@
  * Estructura del panel: navegación lateral (abajo en el teléfono), usuario
  * conectado, cierre de sesión y el chip de estado de WhatsApp que se refresca
  * cada 15 segundos para que la organizadora sepa si puede enviar o no.
+ *
+ * Además se consulta una vez, al entrar, a dónde apuntan los enlaces de las
+ * invitaciones: si no son públicos (el clásico `localhost`), se muestra un
+ * aviso rojo arriba de todo. Sin ese aviso, la organizadora descubre el
+ * problema cuando los invitados ya recibieron un enlace que no abre.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useSession } from '../lib/session';
-import type { WhatsAppStatusResponse } from '../lib/types';
+import type { LinkStatusResponse, WhatsAppStatusResponse } from '../lib/types';
 
 interface NavItem {
   to: string;
@@ -81,6 +86,7 @@ export function AdminLayout(): JSX.Element {
 
   const [waStatus, setWaStatus] = useState<WhatsAppStatusResponse | null>(null);
   const [waError, setWaError] = useState(false);
+  const [links, setLinks] = useState<LinkStatusResponse | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const loadStatus = useCallback(async (): Promise<void> => {
@@ -106,6 +112,22 @@ export function AdminLayout(): JSX.Element {
       abortRef.current?.abort();
     };
   }, [loadStatus]);
+
+  /* Enlaces de las invitaciones: una sola vez, no cambian sin reiniciar la API. */
+  useEffect(() => {
+    let cancelled = false;
+    api.system
+      .links()
+      .then((data) => {
+        if (!cancelled) setLinks(data);
+      })
+      .catch(() => {
+        /* Si la consulta falla, el panel sigue funcionando: no se bloquea nada. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const items = navItems(weddingId);
 
@@ -167,6 +189,43 @@ export function AdminLayout(): JSX.Element {
         </header>
 
         <div className="content">
+          {links && !links.sendable ? (
+            <div className="alert alert--err alert--page" role="alert">
+              <div>
+                <div className="alert__title">
+                  Los enlaces de las invitaciones no se abren desde un teléfono
+                </div>
+                <p>
+                  Ahora apuntan a <code>{links.publicWebUrl}</code>
+                  {links.problem === 'loopback' || links.problem === 'private-ip'
+                    ? ': en el celular de un invitado esa dirección apunta a su propio teléfono, así que la invitación no carga.'
+                    : ', que no es una dirección pública.'}{' '}
+                  Mientras siga así, los <strong>envíos reales están bloqueados</strong> (el modo
+                  seco sí funciona: sirve para revisar los textos).
+                </p>
+                <p>
+                  Configurá <code>PUBLIC_WEB_URL</code> con el dominio público de la web, reiniciá
+                  la API y recargá esta página. Opciones gratuitas y de bajo coste en{' '}
+                  <code>{links.docs}</code>.
+                </p>
+                <p>
+                  Enlace de ejemplo de cómo saldría hoy: <code>{links.exampleLink}</code>
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          {links && links.sendable && links.warnings.length > 0 ? (
+            <div className="alert alert--warn alert--page" role="status">
+              <div>
+                <div className="alert__title">Revisá el enlace de las invitaciones</div>
+                {links.warnings.map((warning) => (
+                  <p key={warning}>{warning}</p>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <Outlet />
         </div>
       </div>

@@ -586,6 +586,21 @@ ol {
 .alert__title {
   font-weight: 700;
 }
+/* Aviso a nivel de página (arriba del contenido del panel). */
+.alert--page {
+  margin-bottom: 18px;
+}
+.alert--page p {
+  margin: 6px 0 0;
+}
+.alert--page code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 8%);
+  overflow-wrap: anywhere;
+}
 
 /* --- Estados ------------------------------------------------------------ */
 .state {
