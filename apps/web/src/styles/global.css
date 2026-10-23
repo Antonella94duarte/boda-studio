@@ -453,6 +453,17 @@ ol {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  /* Sombra en el borde derecho mientras quede contenido por ver: avisa de que
+     se puede desplazar en vez de parecer que la tabla está cortada. */
+  background:
+    linear-gradient(to right, var(--surface) 40%, rgba(255, 255, 255, 0)) left center / 32px 100%
+      no-repeat local,
+    linear-gradient(to left, var(--surface) 40%, rgba(255, 255, 255, 0)) right center / 32px 100%
+      no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(34, 30, 25, 0.12), transparent) left center / 12px
+      100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(34, 30, 25, 0.12), transparent) right center /
+      12px 100% no-repeat scroll;
 }
 .table {
   width: 100%;
@@ -461,7 +472,7 @@ ol {
 }
 .table th,
 .table td {
-  padding: 10px 12px;
+  padding: 10px 8px;
   text-align: left;
   border-bottom: 1px solid var(--line-soft);
   vertical-align: middle;
@@ -477,6 +488,25 @@ ol {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+/* Aviso de desplazamiento horizontal: solo aparece cuando la tabla no entra. */
+.table-hint {
+  display: none;
+}
+@media (max-width: 1240px) {
+  .table-hint {
+    display: inline;
+  }
+}
+
+/* La tabla de invitados tiene muchas columnas: en pantallas angostas se
+   esconde el estado del envío (se ve igual en Campañas) para que no quede
+   cortada la columna de acciones. */
+@media (max-width: 1340px) {
+  .table .col-envio {
+    display: none;
+  }
 }
 .table tbody tr:hover {
   background: #fdfbf7;
@@ -586,19 +616,85 @@ ol {
 .alert__title {
   font-weight: 700;
 }
-/* Aviso a nivel de página (arriba del contenido del panel). */
-.alert--page {
-  margin-bottom: 18px;
+
+/* --- Aviso discreto, plegable ------------------------------------------
+   Para el estado del enlace público: tiene que verse (bloquea envíos) sin
+   gritar en cada pantalla del panel. Una línea, tono ámbar y el detalle
+   técnico se abre a demanda.
+   ---------------------------------------------------------------------- */
+.notice {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
-.alert--page p {
+.notice--warn {
+  background: var(--warn-100);
+  border-color: #eddcb4;
+  color: #6b4700;
+}
+.notice--info {
+  background: var(--info-100);
+  border-color: #c3daf5;
+  color: #14456f;
+}
+.notice > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.notice > summary::-webkit-details-marker {
+  display: none;
+}
+.notice > summary::after {
+  content: '⌄';
+  margin-left: auto;
+  opacity: 0.55;
+  transition: transform 0.15s ease;
+}
+.notice[open] > summary::after {
+  transform: rotate(180deg);
+}
+.notice:hover > summary {
+  filter: brightness(0.98);
+}
+.notice__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentcolor;
+  opacity: 0.65;
+  flex: 0 0 auto;
+}
+.notice__hint {
+  font-weight: 500;
+  opacity: 0.82;
+  white-space: nowrap;
+}
+.notice__hint::before {
+  content: '·';
+  margin-right: 6px;
+  opacity: 0.7;
+}
+.notice__body {
+  padding: 0 14px 12px;
+  font-weight: 400;
+}
+.notice__body p {
   margin: 6px 0 0;
 }
-.alert--page code {
+.notice__body code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgb(0 0 0 / 8%);
+  background: rgb(0 0 0 / 9%);
   overflow-wrap: anywhere;
 }
 
@@ -912,6 +1008,14 @@ ol {
   gap: 20px;
   max-width: 1180px;
   width: 100%;
+  min-width: 0;
+}
+/* Sin esto, una tabla ancha estira a su tarjeta (min-width: auto de los hijos
+   flexibles) y el panel entero se sale de la pantalla: la última columna queda
+   cortada y también el chip del encabezado. Con min-width: 0 la tarjeta se
+   queda en su sitio y es `.table-wrap` quien hace scroll horizontal. */
+.content > * {
+  min-width: 0;
 }
 
 .page-head {

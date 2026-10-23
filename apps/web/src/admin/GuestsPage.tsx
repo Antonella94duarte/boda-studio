@@ -353,6 +353,7 @@ export function GuestsPage(): JSX.Element {
             <div className="panel__head">
               <span className="card__title">{guests.length} invitado(s)</span>
               <span className="muted small">
+                <span className="table-hint">Desplazá la tabla para ver todas las columnas · </span>
                 {summary.confirmedPasses} pases confirmados de {summary.totalPasses}
               </span>
             </div>
@@ -363,9 +364,8 @@ export function GuestsPage(): JSX.Element {
                     <th>Invitado</th>
                     <th>Teléfono</th>
                     <th>Pases</th>
-                    <th>Grupo</th>
-                    <th>Confirmación</th>
-                    <th>Mensaje</th>
+                    <th>RSVP</th>
+                    <th className="col-envio">Envío</th>
                     <th>Enlace</th>
                     <th aria-label="Acciones" />
                   </tr>
@@ -375,29 +375,49 @@ export function GuestsPage(): JSX.Element {
                     <tr key={guest.id}>
                       <td>
                         <strong>{guest.fullName}</strong>
+                        {guest.groupName ? (
+                          <div
+                            className="muted tiny truncate"
+                            style={{ maxWidth: 170 }}
+                            title={guest.groupName}
+                          >
+                            {guest.groupName}
+                          </div>
+                        ) : null}
                         {guest.notes ? (
-                          <div className="muted tiny truncate" title={guest.notes}>
+                          <div
+                            className="muted tiny truncate"
+                            style={{ maxWidth: 170 }}
+                            title={guest.notes}
+                          >
                             {guest.notes}
                           </div>
                         ) : null}
                       </td>
                       <td className="nowrap mono">{formatPhone(guest.phone)}</td>
-                      <td>{formatPasses(guest.passes)}</td>
-                      <td className="muted">{guest.groupName ?? '—'}</td>
+                      <td className="nowrap">{formatPasses(guest.passes)}</td>
                       <td>
                         <StatusBadge status={guest.status} />
                         {guest.companions.length > 0 ? (
-                          <div className="muted tiny truncate" style={{ maxWidth: 180 }}>
+                          <div
+                            className="muted tiny truncate"
+                            style={{ maxWidth: 140 }}
+                            title={guest.companions.join(', ')}
+                          >
                             + {guest.companions.join(', ')}
                           </div>
                         ) : null}
                         {guest.dietary ? (
-                          <div className="muted tiny truncate" style={{ maxWidth: 180 }}>
+                          <div
+                            className="muted tiny truncate"
+                            style={{ maxWidth: 140 }}
+                            title={guest.dietary}
+                          >
                             🍽 {guest.dietary}
                           </div>
                         ) : null}
                       </td>
-                      <td>
+                      <td className="col-envio">
                         <span
                           className={`badge${
                             guest.messageStatus === 'failed'
@@ -487,8 +507,9 @@ export function GuestsPage(): JSX.Element {
                             disabled={busyId === guest.id}
                             onClick={() => setRegenerating(guest)}
                             title="Generar un enlace nuevo (el anterior deja de funcionar)"
+                            aria-label="Generar un enlace nuevo"
                           >
-                            Enlace
+                            🔗
                           </button>
                           <button
                             type="button"

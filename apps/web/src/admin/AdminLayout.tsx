@@ -190,40 +190,44 @@ export function AdminLayout(): JSX.Element {
 
         <div className="content">
           {links && !links.sendable ? (
-            <div className="alert alert--err alert--page" role="alert">
-              <div>
-                <div className="alert__title">
-                  Los enlaces de las invitaciones no se abren desde un teléfono
-                </div>
+            <details className="notice notice--warn">
+              <summary>
+                <span className="notice__dot" aria-hidden="true" />
+                <span>Los enlaces de las invitaciones no abren desde un teléfono</span>
+                <span className="notice__hint">envíos reales bloqueados</span>
+              </summary>
+              <div className="notice__body">
                 <p>
-                  Ahora apuntan a <code>{links.publicWebUrl}</code>
+                  Apuntan a <code>{links.publicWebUrl}</code>
                   {links.problem === 'loopback' || links.problem === 'private-ip'
-                    ? ': en el celular de un invitado esa dirección apunta a su propio teléfono, así que la invitación no carga.'
+                    ? ': en el celular de un invitado esa dirección es su propio teléfono, así que la invitación no carga.'
                     : ', que no es una dirección pública.'}{' '}
-                  Mientras siga así, los <strong>envíos reales están bloqueados</strong> (el modo
-                  seco sí funciona: sirve para revisar los textos).
+                  El modo seco sigue disponible para revisar los textos.
                 </p>
                 <p>
-                  Configurá <code>PUBLIC_WEB_URL</code> con el dominio público de la web, reiniciá
-                  la API y recargá esta página. Opciones gratuitas y de bajo coste en{' '}
-                  <code>{links.docs}</code>.
+                  Para enviar de verdad, poné en <code>PUBLIC_WEB_URL</code> el dominio público de
+                  la web, reiniciá la API y recargá esta página. Opciones gratuitas y de bajo coste
+                  en <code>{links.docs}</code>.
                 </p>
                 <p>
-                  Enlace de ejemplo de cómo saldría hoy: <code>{links.exampleLink}</code>
+                  Hoy el enlace saldría así: <code>{links.exampleLink}</code>
                 </p>
               </div>
-            </div>
+            </details>
           ) : null}
 
           {links && links.sendable && links.warnings.length > 0 ? (
-            <div className="alert alert--warn alert--page" role="status">
-              <div>
-                <div className="alert__title">Revisá el enlace de las invitaciones</div>
+            <details className="notice notice--info">
+              <summary>
+                <span className="notice__dot" aria-hidden="true" />
+                <span>Conviene revisar el enlace de las invitaciones</span>
+              </summary>
+              <div className="notice__body">
                 {links.warnings.map((warning) => (
                   <p key={warning}>{warning}</p>
                 ))}
               </div>
-            </div>
+            </details>
           ) : null}
 
           <Outlet />

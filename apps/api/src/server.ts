@@ -28,9 +28,40 @@ import { currentLinkHealth, linkWarningLine } from './services/link-health.js';
 /** Límite de subida de archivos de invitados: 10 MB. */
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
+/**
+ * Configuración del logger.
+ *
+ * En producción se emite JSON (lo que esperan los servicios de logs: Railway,
+ * Render, Docker). En desarrollo se lee a mano, así que el JSON crudo de pino
+ * (`{"level":30,"time":1792…,"pid":…}`) no aporta nada: `pino-pretty` lo
+ * convierte en una línea con hora y mensaje. Si el paquete no estuviera
+ * instalado, pino falla al arrancar; por eso es dependencia de desarrollo
+ * declarada y solo se usa fuera de producción.
+ *
+ * En pruebas (`NODE_ENV=test`) no hay logger: los tests no ensucian la salida.
+ */
+function loggerOptions() {
+  if (env.isTest) return false;
+  if (env.isProduction) return { level: 'info' as const };
+
+  return {
+    level: 'debug' as const,
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss',
+        ignore: 'pid,hostname',
+        singleLine: true,
+        errorLikeObjectKeys: ['err', 'error'],
+      },
+    },
+  };
+}
+
 export async function createApp(): Promise<FastifyInstance> {
   const app = Fastify({
-    logger: env.isTest ? false : { level: env.isProduction ? 'info' : 'debug' },
+    logger: loggerOptions(),
     trustProxy: true,
     // Los JSON de importación pueden traer miles de filas.
     bodyLimit: 5 * 1024 * 1024,
