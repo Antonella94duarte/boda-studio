@@ -56,12 +56,12 @@ Credenciales del seed: las de `ADMIN_EMAIL` / `ADMIN_PASSWORD` del `.env`
 ## Estructura
 
 ```
-apps/api        Backend Node (Fastify + Prisma): invitados, importación, campañas, WhatsApp
+apps/api        Backend Node (Fastify + Prisma): invitados, importación, fotos, campañas, WhatsApp
 apps/web        React + Vite: invitación pública personalizada + panel de la organizadora
 packages/shared Contratos Zod compartidos: invitación, invitado, importación, campaña
 deploy/         Piezas de despliegue: Caddyfile (HTTPS automático), override de compose y .env de producción
 samples/        Datos reales de ejemplo (boda Sandra & Jorge, listas en CSV/TXT/XLSX)
-docs/           Documentación del proyecto
+docs/           Documentación del proyecto (las capturas del manual viven en docs/img/manual/)
 ```
 
 ## Documentación
@@ -75,7 +75,7 @@ docs/           Documentación del proyecto
 | [05 · Envío por WhatsApp](docs/05-whatsapp-envios.md) | Baileys vs API oficial, cola, retardos, riesgos y mitigaciones |
 | [06 · Despliegue](docs/06-despliegue.md) | Vercel/Netlify + Railway/Render, volumen de sesión, checklist |
 | [07 · Roadmap](docs/07-roadmap.md) | Fases, criterios de aceptación y riesgos |
-| [08 · Manual de la organizadora](docs/08-manual-organizadora.md) | Guía de uso sin tecnicismos |
+| [08 · Manual de la organizadora](docs/08-manual-organizadora.md) | Guía de uso sin tecnicismos, con capturas (también en `.docx` para entregar) |
 | [09 · Contrato HTTP del API](docs/09-contrato-http.md) | Todas las rutas, envolturas y la decisión de integración con la web |
 | [10 · Una URL pública de verdad](docs/10-url-publica.md) | Qué URL poner para que los enlaces de los mensajes abran: opciones gratis (0 USD) y de bajo coste |
 | [11 · Despliegue desde el navegador](docs/11-despliegue-desde-el-navegador.md) | Paso a paso sin instalar nada: Oracle Cloud + Cloud Shell + DNS + HTTPS |
@@ -93,13 +93,15 @@ pwsh -File scripts/verify.ps1
 | Script | Qué hace |
 |---|---|
 | `scripts/verify.ps1` | Verificación completa, con resumen paso a paso |
-| `scripts/smoke-api.mjs` | Prueba de integración por HTTP: login → bodas → invitados → invitación pública → RSVP → campaña en modo seco → WhatsApp |
+| `scripts/smoke-api.mjs` | Prueba de integración por HTTP: login → bodas → invitados → fotos → invitación pública → RSVP → campaña en modo seco → WhatsApp |
+| `scripts/build-manual-docx.py` | Regenera el manual de la organizadora en Word desde el Markdown |
+| `scripts/optimize-manual-shots.py` | Redimensiona y recomprime las capturas del manual |
 
 La prueba de humo se puede correr sola, con la API ya levantada:
 
 ```bash
 pnpm dev:api                 # en otra terminal
-node scripts/smoke-api.mjs   # 60+ comprobaciones contra http://localhost:4000
+node scripts/smoke-api.mjs   # 70+ comprobaciones contra http://localhost:4000
 ```
 
 ## Comandos
@@ -109,7 +111,7 @@ node scripts/smoke-api.mjs   # 60+ comprobaciones contra http://localhost:4000
 | `pnpm dev` | Levanta API y web en paralelo |
 | `pnpm dev:api` / `pnpm dev:web` | Solo uno de los dos |
 | `pnpm typecheck` | TypeScript estricto en los tres paquetes |
-| `pnpm test` | Tests (parser CSV/TSV, mapeo de columnas, normalización de teléfonos) |
+| `pnpm test` | Tests: CSV/TSV, mapeo de columnas, teléfonos, enlaces públicos y validación de imágenes |
 | `pnpm build` | Build de producción |
 | `pnpm db:push` | Crea/actualiza las tablas |
 | `pnpm db:seed` | Usuario de la organizadora + boda demo + invitados |
@@ -130,6 +132,9 @@ node scripts/smoke-api.mjs   # 60+ comprobaciones contra http://localhost:4000
    primera campaña de cada boda se ve sin enviarse. Ver `docs/05-whatsapp-envios.md`.
 5. **Cada mensaje se persiste antes y después de enviarse**: un reinicio del servidor a mitad
    de campaña no repite ni pierde ningún mensaje.
+6. **Las fotos son archivos, no datos de la base**: se guardan en `UPLOAD_DIR` con un nombre
+   generado por el servidor y la configuración solo guarda su ruta (`/api/uploads/…`). Por eso
+   el volumen de `storage/uploads` es tan importante como el de la sesión de WhatsApp.
 
 ## Estado del proyecto
 
@@ -137,26 +142,24 @@ Ver [docs/07-roadmap.md](docs/07-roadmap.md).
 
 **Verificado de punta a punta** con `pwsh -File scripts/verify.ps1` (10/10 pasos en verde):
 instalación, compilación de los tres paquetes, generación del cliente Prisma, creación de las
-tablas, datos de ejemplo, typecheck estricto sin errores, **66 tests unitarios** (24 del paquete
-compartido + 42 del API) y **64 comprobaciones de integración por HTTP** (`scripts/smoke-api.mjs`),
+tablas, datos de ejemplo, typecheck estricto sin errores, **84 tests unitarios** (24 del paquete
+compartido + 60 del API) y **73 comprobaciones de integración por HTTP** (`scripts/smoke-api.mjs`),
 incluyendo una campaña de WhatsApp en modo seco con el texto final de cada invitado, una
-confirmación de asistencia y el rechazo de una campaña real cuando el enlace de las invitaciones
-no es público.
+confirmación de asistencia, el rechazo de una campaña real cuando el enlace de las invitaciones
+no es público y la subida, el servido público y el borrado de una foto de la invitación.
 
 > Sin PowerShell 7 a mano, el mismo script corre igual con
 > `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1`.
 
-> La guarda de enlaces públicos agregó `apps/api/src/utils/public-url.test.ts` (15 tests) y sus
-> comprobaciones en `scripts/smoke-api.mjs`. Si algún día esos dos archivos cambian, `pnpm test`
-> y `node scripts/smoke-api.mjs` son los que lo cubren.
-
-
+> La guarda de enlaces públicos agregó `apps/api/src/utils/public-url.test.ts` (15 tests) y la
+> subida de fotos `apps/api/src/utils/image-file.test.ts` (18 tests), con sus comprobaciones en
+> `scripts/smoke-api.mjs`. Si esos archivos cambian, `pnpm test` y `node scripts/smoke-api.mjs`
+> son los que lo cubren.
 
 Lo que falta para usarlo con una clienta real:
 
-1. **Abrir la invitación en un navegador** y ajustar el diseño con las fotos definitivas
-   (el renderizado público no se pudo inspeccionar visualmente: no hay navegador en el entorno
-   de desarrollo de este repo).
+1. **Revisar el diseño de la invitación con las fotos definitivas de la pareja** (el diseño está
+   probado en un navegador real, pero cada boda trae sus propias fotos y textos).
 2. **Probar el envío real**: cargar `WHATSAPP_ENGINE=baileys`, escanear el QR con el chip
    dedicado y hacer una campaña de 5 mensajes a números propios.
 3. **Desplegar** siguiendo [docs/06-despliegue.md](docs/06-despliegue.md), con el volumen

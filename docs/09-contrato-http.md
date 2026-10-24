@@ -38,6 +38,20 @@ verifica [`scripts/smoke-api.mjs`](../scripts/smoke-api.mjs) de punta a punta.
 `config` es el `WeddingConfig` **ya parseado** (objeto, no el String guardado) y `counts` son los
 contadores calculados: `{guests, totalPasses, pending, confirmed, declined, maybe, campaigns}`.
 
+## Fotos de la invitación
+
+| Método | Ruta | Notas |
+|---|---|---|
+| GET | `/api/weddings/:id/images` | `{images: StoredImage[]}` · biblioteca de fotos de esta boda |
+| POST | `/api/weddings/:id/images` | `multipart/form-data` con uno o varios campos `file` (máx. 10 archivos, 8 MB cada uno) → `{images, errors}` · 400 si ninguna se pudo guardar |
+| DELETE | `/api/weddings/:id/images/:file` | `{ok, file, referencesRemoved}` · borra el archivo y limpia sus referencias en `heroImage`, `gallery` y `story.photos` |
+| GET | `/api/uploads/:id/:file` | **Sin token** · sirve la imagen con `Cache-Control: immutable`. 404 si el nombre no existe |
+
+`StoredImage` = `{file, url, size, uploadedAt}`, donde `url` es la ruta que se guarda en la
+configuración (`/api/uploads/<boda>/<archivo>`). El nombre del archivo lo genera el servidor y el
+formato se valida por los **bytes de cabecera**, no por la extensión ni el `Content-Type`: JPG,
+PNG y WebP. SVG y GIF se rechazan a propósito (un SVG puede llevar scripts).
+
 ## Invitados
 
 | Método | Ruta | Notas |

@@ -116,6 +116,14 @@ const EnvSchema = z.object({
   WHATSAPP_ENGINE: z.enum(['preview', 'baileys', 'cloud-api']).default('preview'),
   WHATSAPP_SESSION_DIR: z.string().min(1).default('./storage/sessions'),
 
+  // --- Archivos subidos ----------------------------------------------------
+  /**
+   * Carpeta de las fotos de las invitaciones. En Docker es un volumen
+   * (`/app/storage/uploads`): si se pierde, las invitaciones quedan sin fotos
+   * y hay que volver a subirlas.
+   */
+  UPLOAD_DIR: z.string().min(1).default('./storage/uploads'),
+
   // --- API oficial de Meta (solo si WHATSAPP_ENGINE=cloud-api) -------------
   WHATSAPP_PHONE_NUMBER_ID: z.preprocess(emptyToUndefined, z.string().optional()),
   WHATSAPP_ACCESS_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),

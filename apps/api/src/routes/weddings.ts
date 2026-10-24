@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { prisma } from '../prisma.js';
 import { toWeddingDto } from '../services/dto.js';
 import { logEvent } from '../services/events.js';
+import { deleteWeddingImages } from '../services/uploads.js';
 import {
   mergeWeddingConfig,
   parseWeddingConfig,
@@ -163,6 +164,8 @@ export default async function weddingRoutes(app: FastifyInstance): Promise<void>
 
     // Las relaciones están en cascada: invitados, campañas y sesiones se van solos.
     await prisma.wedding.delete({ where: { id: wedding.id } });
+    // Las fotos viven en disco: se borran aparte para no dejar archivos huérfanos.
+    await deleteWeddingImages(wedding.id);
 
     reply.send({ ok: true, id: wedding.id });
   });

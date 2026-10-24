@@ -14,6 +14,9 @@
  * solo `fetch` nativo de Node 20+.
  */
 
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 const API_URL = (process.env.API_URL ?? 'http://localhost:4000').replace(/\/+$/, '');
 const EMAIL = process.env.ADMIN_EMAIL ?? 'organizadora@bodastudio.com';
 const PASSWORD = process.env.ADMIN_PASSWORD ?? 'CambiarEstaClave123';
@@ -37,7 +40,7 @@ function section(title) {
 }
 
 async function call(path, options = {}) {
-  const { method = 'GET', body, token, raw } = options;
+  const { method = 'GET', body, token, raw, formData } = options;
   const headers = { Accept: 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -45,7 +48,8 @@ async function call(path, options = {}) {
   const response = await fetch(`${API_URL}/api${path}`, {
     method,
     headers,
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    // Con FormData el navegador/Node pone el Content-Type con su boundary.
+    ...(formData ? { body: formData } : body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
 
   const text = await response.text();
@@ -328,6 +332,66 @@ async function main() {
   section('Aislamiento');
   const anonymous = await call('/weddings', { raw: true });
   ok('sin token -> 401', anonymous.status === 401, `status ${anonymous.status}`);
+
+  section('Fotos de la invitación');
+  const samplePath = fileURLToPath(new URL('../samples/assets/sandra-jorge-1.png', import.meta.url));
+  const sampleBuffer = readFileSync(samplePath);
+
+  const imageForm = new FormData();
+  imageForm.append('file', new Blob([sampleBuffer], { type: 'image/png' }), 'invitacion.png');
+  const uploaded = await call(`/weddings/${wedding.id}/images`, {
+    method: 'POST',
+    token,
+    formData: imageForm,
+  });
+  const image = uploaded?.images?.[0];
+  ok('la foto se sube y devuelve su URL', typeof image?.url === 'string', JSON.stringify(uploaded));
+  ok(
+    'la URL de la foto vive bajo /api/uploads/',
+    typeof image?.url === 'string' && image.url.startsWith(`/api/uploads/${wedding.id}/`),
+    image?.url,
+  );
+
+  if (image?.url) {
+    // Servido público: el invitado no tiene sesión.
+    const served = await fetch(`${API_URL}${image.url}`);
+    ok('la foto se sirve sin token', served.status === 200, `status ${served.status}`);
+    ok(
+      'la foto se sirve como imagen',
+      served.headers.get('content-type') === 'image/png',
+      served.headers.get('content-type') ?? '',
+    );
+
+    const listed = await call(`/weddings/${wedding.id}/images`, { token });
+    ok(
+      'la foto aparece en el listado del panel',
+      Array.isArray(listed?.images) && listed.images.some((item) => item.url === image.url),
+    );
+
+    const removed = await call(`/weddings/${wedding.id}/images/${image.file}`, {
+      method: 'DELETE',
+      token,
+    });
+    ok('la foto se borra', removed?.ok === true);
+    const afterDelete = await fetch(`${API_URL}${image.url}`);
+    ok('la foto borrada ya no se sirve', afterDelete.status === 404, `status ${afterDelete.status}`);
+  }
+
+  // Un archivo que no es imagen pero se llama .png: se rechaza por contenido.
+  const fakeForm = new FormData();
+  fakeForm.append('file', new Blob([Buffer.from('%PDF-1.7\nno soy una foto')], { type: 'image/png' }), 'falsa.png');
+  const fake = await call(`/weddings/${wedding.id}/images`, {
+    method: 'POST',
+    token,
+    formData: fakeForm,
+    raw: true,
+  });
+  ok('un archivo que no es imagen -> 400', fake.status === 400, `status ${fake.status}`);
+  ok(
+    'el rechazo explica el formato',
+    /JPG, PNG o WebP/.test(String(fake.payload?.message ?? '')),
+    String(fake.payload?.message ?? ''),
+  );
 
   console.log(`\n${checks - failures}/${checks} comprobaciones pasaron`);
   if (failures > 0) {

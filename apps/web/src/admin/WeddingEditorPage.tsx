@@ -34,6 +34,7 @@ import {
 } from '../lib/theme';
 import { useWedding } from '../lib/useWedding';
 import { EVENT_KIND_LABELS } from '../lib/labels';
+import { ImageUploader } from './ImageUploader';
 import { Collapsible, ErrorBlock, LoadingBlock, useToast } from './ui';
 
 /* --- Ayudas --------------------------------------------------------------- */
@@ -350,32 +351,27 @@ export function WeddingEditorPage(): JSX.Element {
       {/* --- Portada ------------------------------------------------------- */}
       <Collapsible title="Portada">
         <div className="field">
-          <label htmlFor="heroImage">Imagen de portada (URL)</label>
-          <input
-            id="heroImage"
-            className="input"
-            value={draft.heroImage ?? ''}
-            onChange={(event) => patch({ heroImage: event.target.value || undefined })}
-            placeholder="https://…/foto-portada.jpg"
+          <span className="acc__sub">Foto de portada</span>
+          <ImageUploader
+            weddingId={wedding.id}
+            single
+            showLibrary={false}
+            value={draft.heroImage ? [draft.heroImage] : []}
+            onChange={(urls) => patch({ heroImage: urls[0] })}
+            buttonLabel="Subir la foto de portada"
+            hint="Una sola foto, ideal vertical (por ejemplo 1200×1800 px). Es lo primero que ve el invitado: elegí una donde se vean bien los dos."
           />
-          <span className="hint">
-            Ideal vertical (por ejemplo 1200×1800 px) y por debajo de 500 KB para que cargue rápido
-            en datos móviles.
-          </span>
+          <details className="image-advanced">
+            <summary>Usar una dirección web en vez de subir la foto</summary>
+            <input
+              id="heroImage"
+              className="input"
+              value={draft.heroImage ?? ''}
+              onChange={(event) => patch({ heroImage: event.target.value || undefined })}
+              placeholder="https://…/foto-portada.jpg"
+            />
+          </details>
         </div>
-
-        {draft.heroImage ? (
-          <div
-            style={{
-              width: 160,
-              height: 210,
-              borderRadius: 10,
-              background: `center/cover no-repeat url("${draft.heroImage}")`,
-              border: '1px solid var(--line)',
-            }}
-            aria-hidden="true"
-          />
-        ) : null}
 
         <div className="field">
           <label htmlFor="tagline">Frase de la portada</label>
@@ -469,33 +465,52 @@ export function WeddingEditorPage(): JSX.Element {
         </div>
 
         <div className="field">
-          <label htmlFor="storyPhotos">Fotos de la historia (una URL por línea)</label>
-          <textarea
-            id="storyPhotos"
-            className="textarea"
-            value={draft.story.photos.join('\n')}
-            onChange={(event) =>
-              patch({ story: { ...draft.story, photos: linesToArray(event.target.value) } })
-            }
-            placeholder={'https://…/primera-foto.jpg\nhttps://…/segunda-foto.jpg'}
+          <span className="acc__sub">Fotos de la historia</span>
+          <ImageUploader
+            weddingId={wedding.id}
+            value={draft.story.photos}
+            onChange={(urls) => patch({ story: { ...draft.story, photos: urls } })}
+            max={12}
+            buttonLabel="Subir fotos de la historia"
+            hint="Opcional: las fotos que acompañan el relato de cómo se conocieron. JPG, PNG o WebP de hasta 8 MB."
           />
+          <details className="image-advanced">
+            <summary>Usar direcciones web en vez de subirlas</summary>
+            <textarea
+              id="storyPhotos"
+              className="textarea"
+              value={draft.story.photos.join('\n')}
+              onChange={(event) =>
+                patch({ story: { ...draft.story, photos: linesToArray(event.target.value) } })
+              }
+              placeholder={'https://…/primera-foto.jpg\nhttps://…/segunda-foto.jpg'}
+            />
+          </details>
         </div>
       </Collapsible>
 
       {/* --- Galería ------------------------------------------------------- */}
-      <Collapsible title="Galería">
+      <Collapsible title="Galería" hint={`${draft.gallery.length} foto(s)`}>
         <div className="field">
-          <label htmlFor="gallery">Fotos de la galería (una URL por línea)</label>
-          <textarea
-            id="gallery"
-            className="textarea"
-            value={draft.gallery.join('\n')}
-            onChange={(event) => patch({ gallery: linesToArray(event.target.value) })}
-            placeholder={'https://…/foto-1.jpg\nhttps://…/foto-2.jpg'}
+          <span className="acc__sub">Fotos de la galería</span>
+          <ImageUploader
+            weddingId={wedding.id}
+            value={draft.gallery}
+            onChange={(urls) => patch({ gallery: urls })}
+            max={40}
+            buttonLabel="Subir fotos de la galería"
+            hint="Se muestran en dos columnas en el teléfono y se amplían al tocarlas. Cuatro a ocho fotos es un buen número."
           />
-          <span className="hint">
-            En el teléfono se muestran en dos columnas y se amplían al tocarlas.
-          </span>
+          <details className="image-advanced">
+            <summary>Usar direcciones web en vez de subirlas</summary>
+            <textarea
+              id="gallery"
+              className="textarea"
+              value={draft.gallery.join('\n')}
+              onChange={(event) => patch({ gallery: linesToArray(event.target.value) })}
+              placeholder={'https://…/foto-1.jpg\nhttps://…/foto-2.jpg'}
+            />
+          </details>
         </div>
       </Collapsible>
 

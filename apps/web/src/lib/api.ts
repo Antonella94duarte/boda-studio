@@ -39,12 +39,14 @@ import type {
   GuestSummary,
   GuestTokenResponse,
   GuestUpdateInput,
+  ImageUploadResponse,
   ImportCommitResponse,
   ImportPreview,
   LinkStatusResponse,
   LoginResponse,
   PublicRsvpResponse,
   PublicWeddingResponse,
+  StoredImage,
   UpdateWeddingInput,
   WeddingDetail,
   WeddingListItem,
@@ -569,6 +571,32 @@ export const api = {
       request<WhatsAppTestResponse>(`/weddings/${weddingId}/whatsapp/test`, {
         method: 'POST',
         body: input,
+      }),
+  },
+
+  /* --- Fotos de la invitación ------------------------------------------- */
+  uploads: {
+    /** Fotos ya subidas de esta boda (la "biblioteca" reutilizable). */
+    list: async (weddingId: string, signal?: AbortSignal): Promise<{ images: StoredImage[] }> =>
+      request<{ images: StoredImage[] }>(`/weddings/${weddingId}/images`, { signal }),
+
+    /**
+     * Sube una o varias fotos. La API valida el formato real del archivo y el
+     * peso; si alguna falla, devuelve las que sí se guardaron y el motivo del
+     * resto en `errors`.
+     */
+    upload: async (weddingId: string, files: File[]): Promise<ImageUploadResponse> => {
+      const form = new FormData();
+      for (const file of files) form.append('file', file);
+      return request<ImageUploadResponse>(`/weddings/${weddingId}/images`, {
+        method: 'POST',
+        formData: form,
+      });
+    },
+
+    remove: async (weddingId: string, file: string): Promise<{ ok: boolean }> =>
+      request<{ ok: boolean }>(`/weddings/${weddingId}/images/${encodeURIComponent(file)}`, {
+        method: 'DELETE',
       }),
   },
 

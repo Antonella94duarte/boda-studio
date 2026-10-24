@@ -129,6 +129,24 @@ export interface ImportCommitResponse {
 /** Reexportamos el contrato de importación del paquete compartido. */
 export type { ImportPreview };
 
+/* --- Fotos de la invitación ---------------------------------------------- */
+
+/** Una foto ya subida al servidor, lista para usar en la invitación. */
+export interface StoredImage {
+  /** Nombre del archivo dentro de la carpeta de la boda. */
+  file: string;
+  /** Ruta pública que se guarda en la configuración (`/api/uploads/…`). */
+  url: string;
+  size: number;
+  uploadedAt: string;
+}
+
+export interface ImageUploadResponse {
+  images: StoredImage[];
+  /** Motivo por archivo cuando alguna no se pudo subir. */
+  errors: string[];
+}
+
 /* --- Campañas ------------------------------------------------------------ */
 
 export interface CreateCampaignResponse {

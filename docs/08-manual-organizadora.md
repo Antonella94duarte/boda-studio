@@ -1,130 +1,271 @@
 # 08 · Manual de la organizadora
 
-Guía sin tecnicismos. Para quien organiza la boda, no para quien programa.
+Guía de uso del panel, sin tecnicismos. Para quien organiza la boda.
 
-## Antes de empezar: el número de WhatsApp
+**Qué hace este sistema:** reemplaza la tarjeta PDF y el reenvío de WhatsApp uno por uno.
+Cargás la lista de invitados, el sistema arma **un enlace personal para cada uno**, envía el
+mensaje y después muestra quién confirmó, con cuántos pases y si tiene alguna restricción
+alimentaria.
 
-1. Consigue un **chip solo para el estudio**. No uses tu número personal.
-2. Ponle al WhatsApp el **nombre del estudio** y una **foto de perfil** (transmite confianza).
-3. Úsalo unos días de forma normal: que algunos contactos te escriban, responde. Un número
-   recién creado que manda 200 mensajes el primer día es el que se bloquea.
-4. Tenlo a mano el día que conectes: vas a escanear un código QR.
+> ¿Buscás la guía de instalación? Esta no es. Esto es solo el uso diario del panel.
 
-## Paso 1 · Crear la boda
+---
 
-- Panel → **Bodas → Nueva boda**.
-- Completa: nombre de la pareja, fecha y hora, lugar, y la **dirección web** (por ejemplo
-  `sandraujorge`). Es lo que va a ir en el enlace que reciben los invitados.
-- Guarda. Todavía no está publicada.
+## 1. Antes de empezar
 
-## Paso 2 · Cargar los datos de la invitación
-
-En **Configuración** vas a encontrar, sección por sección, todo lo que sale en la
-invitación:
-
-| Sección | Qué cargar |
+| Necesitás | Para qué |
 |---|---|
-| Portada | Foto principal, frase corta («¡Nos casamos!») |
-| Versículo o frase | La frase y de dónde es (Colosenses 3:4) |
-| Ceremonias | Una tarjeta por evento: **Boda Religiosa** (Iglesia Cristo Rey, 16:30), **Boda Civil y Brindis** (Casa Ardissone, 19:00), etc. Marca la principal |
-| Dress code | «Ellas de largo y ellos de corbata» |
-| Regalos | El mensaje y los datos bancarios (banco, número, alias, titular) |
-| Confirmación | Fecha límite y el WhatsApp de contacto |
-| Música | Enlace a la canción de la pareja |
-| Secciones | Activa, desactiva y **ordena** cada bloque |
-| Tema | Elige un estilo y ajusta los colores |
+| **Fotos de la pareja** | Portada y galería (JPG, PNG o WebP). Se suben desde el panel; no hace falta editarlas antes. |
+| **La lista de invitados** | En Excel, CSV o TXT: nombre y teléfono por fila. |
+| **Un chip de WhatsApp solo para el estudio** | Nunca tu número personal. |
+| **Los datos del evento** | Fecha y hora, iglesia/salón, dress code, datos para regalos. |
 
-Arriba de todo hay un botón **Ver invitación**: ábrela para revisar cómo la va a ver el
-invitado.
+**Prepará el chip con tiempo.** Que tenga el nombre del estudio y foto de perfil, y usalo unos
+días de forma normal antes de la campaña: un número recién creado que manda 200 mensajes el
+primer día es el que WhatsApp bloquea.
 
-Cuando esté lista: **Publicar** (sin esto, el enlace da error para los invitados).
+---
 
-## Paso 3 · Importar los invitados
+## 2. Entrar al panel
 
-1. Prepara el archivo: una fila por invitación, con el **nombre** y el **teléfono**. Si
-   quieres, agrega **pases**, **familia** y **notas**. Si no tenés la planilla armada,
-   descargá la **plantilla** desde el propio panel (botón *Plantilla en Excel*): ya viene con
-   las columnas correctas y una hoja de instrucciones.
-2. Panel → **Importar** → arrastra el archivo (Excel, CSV o TXT).
-3. Elige el **país de los teléfonos** y cuántos **pases** dar por defecto.
-4. Revisa la previsualización:
-   - **Verde / válidas**: se importan.
-   - **Amarillo / con avisos**: se importan, pero conviene mirar (por ejemplo, teléfono
-     repetido).
-   - **Rojo / con error**: no se importan. El motivo está escrito al lado (casi siempre un
-     teléfono incompleto).
-5. Si alguna columna no se reconoció, corrígela en el mapeo y vuelve a mirar.
-6. **Confirmar importación**. Nada se guarda hasta este paso.
+Abrí la dirección del panel (`https://tu-dominio/admin`) y entrá con el correo y la clave que te
+dieron.
 
-Consejo: la primera vez, sube un archivo con 3 personas y mira el resultado.
+![Pantalla de inicio de sesión](img/manual/login.png)
 
-## Paso 4 · Escribir el mensaje y probarlo
+Si olvidaste la clave, pedila a quien administra el sistema: no se puede recuperar sola.
 
-1. Panel → **Campañas**.
-2. El mensaje ya viene escrito. Puedes cambiarlo y usar estas etiquetas:
-   `{{nombre}}`, `{{pases}}`, `{{enlace}}`, `{{novios}}`, `{{fecha}}`, `{{lugar}}`.
-   Ejemplo: `¡Hola {{nombre}}! … ✅ Válido para {{pases}} … 👉 {{enlace}}`
-3. A la derecha vas a ver **cómo le queda el mensaje a un invitado real**.
-4. Deja activado **Modo de prueba** y envía: no se manda nada, pero ves el texto final de
-   todos. Revisa que los nombres, la fecha y el enlace estén bien.
-5. Cuando estés conforme, **apaga el modo de prueba** y envía de verdad.
+---
 
-### Probar con tu propio número (antes de enviar a los invitados)
+## 3. Crear la boda
 
-En la misma pantalla de **Campañas**, arriba del botón de envío, hay un bloque
-**Probar antes de enviar**: escribís tu número y te llega **un mensaje real** con el mismo
-texto de la campaña. Sirve para ver cómo se ve en el celular y para comprobar que el número
-quedó bien conectado.
+**Bodas → Nueva boda.** Completá el nombre de la pareja y la **dirección web** (por ejemplo
+`sandraujorge`); es la parte final del enlace que van a recibir los invitados.
 
-| Prueba | Qué manda | Cuándo usarla |
-|---|---|---|
-| **Modo de prueba** (activado por defecto) | Nada: genera el texto de todos los mensajes y lo registra | Siempre, antes de cualquier envío |
-| **Enviar prueba** (a un número tuyo) | Un mensaje real, solo a ese número | Después de conectar el WhatsApp por QR |
-| **Campaña real** | Un mensaje por invitado, con pausas | Cuando ya viste las dos anteriores |
+![Listado de bodas](img/manual/bodas.png)
 
-Para que la prueba salga de verdad, el número tiene que estar conectado
-(Panel → **WhatsApp** → **Conectar** → escanear el QR). Si todavía no lo está, el panel
-avisa en vez de fallar en silencio.
+> La dirección web conviene elegirla una sola vez. Si la cambiás después, **los enlaces que ya
+> mandaste dejan de funcionar**.
 
-¿Querés probar con **un invitado de la lista** en lugar de un número suelto? Editá su
-teléfono desde **Invitados** (botón *Editar*) y poné el tuyo: como el teléfono se puede
-corregir, sirve tanto para una prueba como para arreglar un número mal cargado.
+La boda nace sin publicar: nada es visible en internet hasta que toques **Publicar**.
 
-## Paso 5 · Conectar WhatsApp y enviar
+---
 
-1. Panel → **WhatsApp** → **Conectar**. Aparece un código QR.
+## 4. Cargar las fotos de la invitación
+
+Esto es lo primero que ve el invitado, así que vale la pena dedicarle un rato.
+
+Abrí la boda → panel **Portada**.
+
+![Panel de portada con la foto subida](img/manual/editor-portada.png)
+
+1. Tocá **Subir la foto de portada** (o arrastrá la foto al recuadro).
+2. Elegí la imagen del teléfono o de la computadora. Se sube sola.
+3. La foto vertical funciona mejor (por ejemplo 1200 × 1800 px). Una foto donde se vean bien
+   los dos es mejor que una muy artística donde no se distingue quién es quién.
+
+> **¿Cuánto puede pesar?** Hasta 8 MB por foto. El sistema acepta JPG, PNG y WebP. Si tu
+> teléfono saca fotos **HEIC** (iPhone), cambialas a JPG antes de subirlas o mandátelas por
+> WhatsApp a vos misma: llegan como JPG.
+
+### La galería
+
+Panel **Galería**. Es la sección «Nuestra galería» de la invitación: se ve en dos columnas y se
+amplía al tocar cada foto.
+
+![Panel de galería con fotos subidas](img/manual/editor-galeria.png)
+
+| Botón | Qué hace |
+|---|---|
+| **Subir fotos de la galería** | Podés elegir varias a la vez (hasta 10). |
+| **Usar una foto ya subida** | Abre la biblioteca: las fotos que ya subiste, para no subirlas dos veces. Tocala y se agrega. |
+| **Quitar** (al pasar el mouse sobre una foto) | La saca de la invitación, pero **la foto queda guardada** en la biblioteca. |
+| **🗑** (al pasar el mouse) | Borra la foto del servidor. Pide confirmación y no se puede deshacer. |
+| **Vaciar la selección** | Deja la galería sin fotos. |
+
+Cuatro a ocho fotos es un buen número. Más que eso tarda en cargar con datos móviles.
+
+**Acordate de tocar «Guardar cambios»** abajo a la derecha: subir la foto la deja en el
+servidor, pero recién con «Guardar» queda asociada a la invitación.
+
+---
+
+## 5. Completar el resto de la invitación
+
+En la misma pantalla, panel por panel:
+
+| Panel | Qué cargar |
+|---|---|
+| **Pareja y dirección** | Nombres, cómo se muestran juntos y la dirección web |
+| **Portada** | Foto y frase corta («¡Nos casamos!») |
+| **Versículo o frase** | La frase y de dónde es (por ejemplo Colosenses 3:14) |
+| **Nuestra historia** | El relato y sus fotos (opcional) |
+| **Galería** | Las fotos de la sección de galería |
+| **Ceremonias y fiesta** | Una tarjeta por evento: **Boda Religiosa** (16:30, Iglesia Cristo Rey), **Boda Civil y Brindis** (19:00, Casa Ardissone)… Marcá la principal, que es la que usa la cuenta regresiva |
+| **Código de vestimenta** | Texto y paleta de colores sugerida |
+| **Regalos** | Mensaje, cuentas bancarias o «el mejor regalo es tu presencia» |
+| **Confirmación (RSVP)** | Fecha límite, WhatsApp de contacto y qué preguntar (acompañantes, restricciones) |
+| **Música** | Enlace a la canción y si querés que suene sola |
+| **Secciones** | Activar, desactivar y **ordenar** cada bloque |
+| **Tema** | Estilo general y colores |
+
+Arriba de todo hay un botón **Ver invitación**: ábrelo para revisar cómo la va a ver el invitado.
+
+---
+
+## 6. Ver la invitación como la ve el invitado
+
+![Portada de la invitación en el teléfono](img/manual/invitacion-portada.jpg)
+
+Lo que ve el invitado es la misma invitación para todos, más un saludo con **su nombre** y
+**sus pases** cuando entra con su enlace personal.
+
+![Sección de galería de la invitación](img/manual/invitacion-galeria.jpg)
+
+Revisala **desde un celular de verdad**, no solo en la computadora. Es la única forma de ver lo
+que va a ver el invitado.
+
+---
+
+## 7. Importar los invitados
+
+**Importar invitados**. Primero prepará el archivo: una fila por invitación, con **nombre** y
+**teléfono**. Si querés, agregá **pases**, **grupo** y **notas**. Si no tenés la planilla, bajá
+la **plantilla** desde el mismo panel.
+
+![Pantalla de importación](img/manual/importar.png)
+
+1. Arrastrá el archivo (Excel, CSV o TXT).
+2. Elegí el **país de los teléfonos** y cuántos **pases** dar por defecto.
+3. Revisá la previsualización:
+
+   | Color | Qué significa |
+   |---|---|
+   | **Verde** | Fila válida: se importa. |
+   | **Amarillo** | Se importa, pero conviene mirar (por ejemplo, teléfono repetido). |
+   | **Rojo** | No se importa. El motivo está escrito al lado; casi siempre es un teléfono incompleto. |
+
+4. Si alguna columna no se reconoció, corregila en el mapeo y volvé a mirar.
+5. **Confirmar importación**. Nada se guarda hasta este paso.
+
+La primera vez, probá con un archivo de tres personas.
+
+---
+
+## 8. Escribir el mensaje y probarlo
+
+**Campañas**. El mensaje ya viene escrito; podés cambiarlo y usar estas etiquetas:
+
+```
+¡Hola {{nombre}}! Tenemos una noticia muy especial…
+👉 {{enlace}}
+✅ Válido para {{pases}}
+```
+
+| Etiqueta | Se reemplaza por |
+|---|---|
+| `{{nombre}}` | Ana Gómez |
+| `{{pases}}` | 2 personas (o 1 persona) |
+| `{{enlace}}` | El enlace personal de ese invitado |
+| `{{novios}}` | Sandra y Jorge |
+| `{{fecha}}` | viernes 30 de octubre de 2026 |
+| `{{lugar}}` | Iglesia Cristo Rey, Asunción |
+| `{{rsvp}}` | El enlace, directo al formulario de confirmación |
+
+![Pantalla de campañas](img/manual/campanas.png)
+
+A la derecha ves **cómo le queda el mensaje a un invitado real**.
+
+---
+
+## 9. Conectar WhatsApp
+
+1. **WhatsApp → Conectar**. Aparece un código QR.
 2. En el chip dedicado: WhatsApp → **Dispositivos vinculados** → **Vincular dispositivo** →
-   escanea.
-3. Cuando diga **Conectado** con el número correcto, vuelve a **Campañas** y dale **Iniciar
-   envío**.
-4. El panel muestra el avance: enviados, fallidos, omitidos. Puedes **pausar** y **reanudar**
-   cuando quieras; también continúa solo al día siguiente si se alcanza el límite diario.
+   escaneá.
+3. El panel pasa a **Conectado** con el número.
 
-**No apures el envío.** Los retardos entre mensajes son lo que protege el número. Una lista
-de 200 invitados tarda aproximadamente una hora y media: es normal y es lo correcto.
+![Pantalla de conexión de WhatsApp](img/manual/whatsapp.png)
 
-## Paso 6 · Seguir las confirmaciones
+La conexión queda guardada: no hay que escanear de nuevo cada día. Si aparece **Desconectado**,
+volvé a conectar; las campañas no se pierden.
 
-Panel → **Invitados**:
+---
 
-- **Confirmados / Pendientes / Rechazados**, con los **pases totales** (esto es lo que pide el
-  salón).
-- Al lado de cada invitado que confirmó, los **nombres de quienes lo acompañan**.
-- Las **restricciones alimentarias** que hayan escrito.
-- Quién recibió el mensaje y quién no (los fallidos se pueden reintentar).
+## 10. Enviar: siempre en tres pasos
 
-Para apurar a los que faltan: envía una **segunda campaña** solo a los pendientes, con un
-mensaje más corto («¡Hola {{nombre}}! Te esperamos, todavía no nos confirmaste…»). El sistema
-permite elegir solo a los pendientes.
+| Paso | Qué manda | Cuándo |
+|---|---|---|
+| **1. Modo de prueba** (viene activado) | Nada: genera el texto de todos los mensajes y lo registra | Siempre, antes de cualquier envío |
+| **2. Enviar prueba** (a tu número) | Un mensaje real, solo a ese número | Después de conectar el WhatsApp |
+| **3. Campaña real** | Un mensaje por invitado, con pausas | Cuando viste las dos anteriores |
 
-## ¿Qué hago si…?
+**No apures el envío.** Los retardos entre mensajes (6 a 14 segundos) son lo que protege el
+número. Una lista de 200 invitados tarda cerca de hora y media: es normal y está bien.
+El panel pausa solo si se llega al tope diario (250) y continúa al día siguiente, o cuando vos
+tocás **Pausar**. Se puede reanudar sin repetir mensajes ya enviados.
+
+---
+
+## 11. Seguir las confirmaciones
+
+**Invitados** muestra, de cada uno:
+
+- **Confirmado / Pendiente / No asiste**.
+- Los **pases** (lo que pide el salón).
+- Los **nombres de los acompañantes** que escribió.
+- Las **restricciones alimentarias**.
+- Si recibió el mensaje y si no (**Sin enviar**, **Enviado**, **Fallido**).
+- Botones para **Copiar** el enlace, abrir **WhatsApp** con el mensaje listo, marcar ✓ / ✕ o
+  **Editar** sus datos.
+
+![Listado de invitados](img/manual/invitados.png)
+
+Para apurar a los que faltan: nueva **campaña** solo a los pendientes, con un mensaje más corto
+(«¡Hola {{nombre}}! Todavía no nos confirmaste…»).
+
+---
+
+## 12. Después de la boda
+
+1. Exportá la lista de invitados desde **Invitados** (o sacá una captura de los totales).
+2. Guardá el archivo en un lugar seguro.
+3. **Borrá los invitados** de esa boda: son datos personales de terceros y no hace falta
+   conservarlos después del evento.
+
+---
+
+## 13. ¿Qué hago si…?
 
 | Situación | Qué hacer |
 |---|---|
-| Un invitado dice que no le llegó | Buscarlo en **Invitados**, revisar el teléfono y el estado del mensaje; corregir el número y crear una campaña solo para él |
-| Un invitado perdió su enlace | Botón **copiar enlace** al lado de su nombre y reenviárselo |
-| Cambió la hora o el lugar | Editarlo en **Configuración**. Todos los enlaces muestran la versión nueva; avisa por WhatsApp |
-| Un invitado pide no recibir más | Editarlo y marcarlo como **Omitido**; no recibe más mensajes |
-| WhatsApp aparece **Desconectado** | **WhatsApp → Conectar** y escanear de nuevo. Las campañas no se pierden |
-| Alguien confirma pero no aparece | Pedirle que use su enlace (con el token). Si escribió por WhatsApp, se puede marcar confirmado a mano desde **Invitados** |
-| Terminó la boda | Exportar la lista, guardarla y **borrar los invitados** de esa boda (derecho de supresión) |
+| Un invitado dice que no le llegó | Buscalo en **Invitados**, revisá el teléfono y el estado del mensaje; corregilo y hacé una campaña solo para él |
+| Perdió su enlace | **Copiar** al lado de su nombre y reenviáselo |
+| Cambió la hora o el lugar | Editá la boda en **Configuración**. Todos los enlaces muestran la versión nueva; avisá por WhatsApp |
+| Pide no recibir más | Editalo y marcalo como que **no asiste**; no se le vuelve a escribir |
+| WhatsApp aparece **Desconectado** | Reconectá con el QR. Las campañas no se pierden |
+| Confirmó pero no aparece | Pedile que use **su** enlace. También podés marcarlo confirmado a mano |
+| Una foto no sube | Revisá que sea JPG, PNG o WebP y que pese menos de 8 MB. Si es HEIC, convertila |
+| El panel muestra un aviso amarillo arriba | Significa que los enlaces todavía apuntan a tu computadora y **no van a abrir en el celular de los invitados**. Avisale a quien administra el sistema: es un ajuste de configuración, no un error tuyo |
+
+---
+
+## 14. Palabras que vas a ver
+
+| Palabra | Qué significa |
+|---|---|
+| **Pases** | Cuántas personas entran con esa invitación (2 pases = la pareja). |
+| **RSVP** | La confirmación de asistencia. |
+| **Modo de prueba** | Envío simulado: muestra los textos pero no manda nada. |
+| **Borrador / Publicada** | Una boda en borrador no se ve en internet; publicada sí. |
+| **Dirección web (slug)** | La parte final del enlace: `sandraujorge` en `/i/sandraujorge`. |
+
+---
+
+## 15. Lo que hay que cuidar
+
+- **Un chip dedicado**, nunca tu número personal.
+- **No bajes los retardos** entre mensajes ni subas el tope diario por tu cuenta.
+- **Probá siempre en modo de prueba** antes de la campaña real.
+- **Respondé** los mensajes que lleguen: un número que solo emite parece un bot.
+- **No compartas** la lista de invitados: son datos personales de otras personas.

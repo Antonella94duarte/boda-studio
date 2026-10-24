@@ -57,6 +57,21 @@ Cuando hay token, la invitación cambia:
 Regla de privacidad: el endpoint público devuelve **solo** nombre, pases, estado,
 acompañantes y fecha de respuesta. Nunca el teléfono, las notas internas ni el grupo.
 
+## Fotos: de dónde salen
+
+La portada (`heroImage`), la galería (`gallery`) y las fotos de la historia
+(`story.photos`) son listas de **rutas**. El panel las llena de dos maneras:
+
+1. **Subiendo el archivo** (lo normal): `POST /api/weddings/:id/images` lo guarda en
+   `UPLOAD_DIR/weddings/<boda>/` con un nombre generado por el servidor y devuelve la ruta
+   `/api/uploads/<boda>/<archivo>`, que es la que queda en la configuración.
+2. **Pegando una URL** externa (opción avanzada, dentro de «Usar una dirección web…»).
+
+Como las rutas quedan dentro de `/api`, las imágenes se sirven por el mismo origen que la
+invitación y el mismo proxy de nginx: no hay CORS ni configuración extra. El servido público
+(`GET /api/uploads/:id/:file`) no pide token porque el invitado no tiene sesión, y el nombre
+lleva 12 caracteres aleatorios para que no se pueda adivinar la foto de otra boda.
+
 ## Diseño y tema
 
 - **CSS puro con custom properties.** El tema de cada boda es un objeto `Theme` (colores +

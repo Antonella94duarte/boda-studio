@@ -18,6 +18,16 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    watch: {
+      /**
+       * Los editores que guardan de forma atómica (crean un archivo temporal y
+       * después lo renombran) dejan carpetas `.*.tmpdir` y `.tmp` dentro de
+       * `src`. En Windows, Vite intenta observarlas y el proceso muere con
+       * `EBUSY: resource busy or locked`, tumbando también la API cuando corre
+       * con `pnpm dev`. Ignorarlas evita ese crash sin perder el hot reload.
+       */
+      ignored: ['**/node_modules/**', '**/.git/**', '**/.*.tmpdir/**', '**/*.tmp'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:4000',

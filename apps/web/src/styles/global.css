@@ -1175,6 +1175,175 @@ ol {
   color: var(--ink-500);
 }
 
+/* --- Fotos de la invitación --------------------------------------------
+   Grilla de miniaturas + zona para arrastrar archivos. El botón de agregar
+   imita el tamaño de las fotos para que el bloque no salte al subir la
+   primera.
+   ---------------------------------------------------------------------- */
+.image-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.image-field__drop {
+  border-radius: var(--r-md);
+  outline: 2px dashed transparent;
+  outline-offset: 4px;
+  transition:
+    outline-color 0.15s ease,
+    background 0.15s ease;
+}
+.image-field__drop.is-dragging {
+  outline-color: var(--gold-500);
+  background: var(--surface-2);
+}
+.image-field__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 10px;
+}
+.image-field__grid--single {
+  grid-template-columns: minmax(150px, 190px);
+}
+.image-card {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.image-card__bar {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px;
+  background: linear-gradient(transparent, rgb(0 0 0 / 55%));
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.image-card:hover .image-card__bar,
+.image-card:focus-within .image-card__bar {
+  opacity: 1;
+}
+.image-card__bar .btn {
+  background: rgb(255 255 255 / 92%);
+}
+.image-card--add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 0.78rem;
+  color: var(--ink-500);
+  border-style: dashed;
+  cursor: pointer;
+  padding: 8px;
+}
+.image-card--add > span:first-child {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.image-card--add:hover:not(:disabled) {
+  border-color: var(--brand-500);
+  color: var(--ink-700);
+}
+.image-card--add:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.image-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.image-field__msg {
+  font-size: 0.82rem;
+  color: var(--ok-600);
+}
+.image-field__msg--err {
+  color: var(--err-600);
+}
+.image-field__hint {
+  font-size: 0.82rem;
+  color: var(--ink-500);
+}
+.image-library {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface-2);
+}
+.image-library__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+}
+.image-library__item {
+  position: relative;
+  padding: 0;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface);
+  cursor: pointer;
+}
+.image-library__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.image-library__item:hover:not(:disabled) {
+  border-color: var(--brand-500);
+}
+.image-library__item.is-chosen {
+  border-color: var(--ok-600);
+  opacity: 0.5;
+  cursor: default;
+}
+.image-library__check {
+  position: absolute;
+  inset: auto 4px 4px auto;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  background: var(--ok-600);
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+/* Alternativa avanzada: pegar una URL en vez de subir el archivo. */
+.image-advanced {
+  font-size: 0.8rem;
+  color: var(--ink-500);
+}
+.image-advanced > summary {
+  cursor: pointer;
+  padding: 2px 0;
+}
+.image-advanced .input,
+.image-advanced .textarea {
+  margin-top: 8px;
+}
+
+
+
 /* Filas repetibles (párrafos, cuentas, eventos) */
 .repeat {
   border: 1px solid var(--line);

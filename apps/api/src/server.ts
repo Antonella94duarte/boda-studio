@@ -13,6 +13,7 @@ import guestRoutes from './routes/guests.js';
 import importRoutes from './routes/imports.js';
 import publicRoutes from './routes/public.js';
 import systemRoutes from './routes/system.js';
+import uploadRoutes, { publicImageRoutes } from './routes/uploads.js';
 import weddingRoutes from './routes/weddings.js';
 import whatsappRoutes from './routes/whatsapp.js';
 import { currentLinkHealth, linkWarningLine } from './services/link-health.js';
@@ -78,7 +79,9 @@ export async function createApp(): Promise<FastifyInstance> {
   });
 
   await app.register(multipart, {
-    limits: { fileSize: MAX_UPLOAD_BYTES, files: 1, fields: 20 },
+    // `files` tiene que alcanzar para la subida de fotos (hasta 10 por vez).
+    // El importador de invitados usa un solo archivo, pero comparte este límite.
+    limits: { fileSize: MAX_UPLOAD_BYTES, files: 12, fields: 20 },
   });
 
   // Se decora en la instancia raíz para que todos los plugins lo hereden.
@@ -119,6 +122,9 @@ export async function createApp(): Promise<FastifyInstance> {
       await api.register(importRoutes);
       await api.register(campaignRoutes);
       await api.register(whatsappRoutes);
+      await api.register(uploadRoutes);
+      // Sin token: el invitado abre su invitación sin sesión.
+      await api.register(publicImageRoutes);
       await api.register(publicRoutes);
       await api.register(systemRoutes);
     },
